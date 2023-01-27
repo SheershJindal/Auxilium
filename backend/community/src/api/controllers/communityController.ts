@@ -45,6 +45,20 @@ export class CommunityController {
     }
   };
 
+  public leaveCommunity = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling leave community endpoint with %o', { body: req.body, params: req.params });
+    try {
+      const userId = req.currentUser.userId;
+      const communityId = req.params.communityId as unknown as IUserCommunity['communityId'];
+
+      const status = await this.communityServiceInstance.leaveCommunity(userId, communityId);
+      return res.status(200).json(Result.success(status));
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
   public getAllCommunitiesForUser = async (req: IRequest, res: IResponse, next: INextFunction) => {
     this.logger.debug('Calling My Communities endpoint with %o', { body: req.body, params: req.params });
 

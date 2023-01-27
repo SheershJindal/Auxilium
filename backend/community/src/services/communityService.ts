@@ -45,20 +45,38 @@ export default class CommunityService {
     communityId: IUserCommunity['communityId'],
   ) => {
     this.logger.silly('Creating userCommunities record');
+    try {
+      const userCommunitiesRecord = await this.userCommunityRepositoryInstance.subscribeUserToCommunity(
+        userId,
+        communityId,
+      );
+      if (!userCommunitiesRecord) throw 'Cannot subscribe to the community';
+      
+      const updatedCommunity = await this.communityRepositoryInstance.increaseTotalMembersForCommunity(communityId, 1);
 
-    const userCommunitiesRecord = await this.userCommunityRepositoryInstance.subscribeUserToCommunity(
-      userId,
-      communityId,
-    );
-    if (!userCommunitiesRecord) throw 'Cannot subscribe to the community';
+      const userCommunity = { ...userCommunitiesRecord };
 
-    const userCommunity = { ...userCommunitiesRecord };
+      Reflect.deleteProperty(userCommunity, '_id');
+      Reflect.deleteProperty(userCommunity, 'createdAt');
+      Reflect.deleteProperty(userCommunity, 'updatedAt');
 
-    Reflect.deleteProperty(userCommunity, '_id');
-    Reflect.deleteProperty(userCommunity, 'createdAt');
-    Reflect.deleteProperty(userCommunity, 'updatedAt');
+      return userCommunity;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    return userCommunity;
+  public leaveCommunity = async (userId: IUserCommunity['userId'], communityId: IUserCommunity['communityId']) => {
+    try {
+      const status = await this.userCommunityRepositoryInstance.deleteUserFromCommunity(userId, communityId);
+      if (status.deletedCount == 0) throw 'You are not subscribed to this community';
+
+      const community = await this.communityRepositoryInstance.increaseTotalMembersForCommunity(communityId, -1);
+
+      return `Successfully left ${community.name}`;
+    } catch (error) {
+      throw error;
+    }
   };
 
   public getAllCommunitiesForUser = async (userId: IUserCommunity['userId']) => {

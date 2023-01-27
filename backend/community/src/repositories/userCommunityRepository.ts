@@ -12,9 +12,25 @@ export class UserCommunityRepository {
     communityId: IUserCommunity['communityId'],
   ) => {
     try {
+      const checkExistence = await UserCommunityModel.findOne({ userId, communityId });
+      if (checkExistence) {
+        throw 'You are already subscribed to this community.';
+      }
       const record = await UserCommunityModel.create({ userId: userId, communityId: communityId });
       if (record) return record.toObject();
       return null;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public deleteUserFromCommunity = async (
+    userId: IUserCommunity['userId'],
+    communityId: IUserCommunity['communityId'],
+  ) => {
+    try {
+      const status = await UserCommunityModel.deleteOne({ userId, communityId });
+      return status;
     } catch (e) {
       throw e;
     }

@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 export interface ICommunity {
   _id: Types.ObjectId;
   name: String;
-  totalMembers: Number;
+  totalMembers: number;
   isClosed?: Boolean;
   moderators: Types.ObjectId[];
 }
