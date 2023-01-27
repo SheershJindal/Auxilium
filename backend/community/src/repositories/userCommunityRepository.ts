@@ -7,6 +7,10 @@ import { Types } from 'mongoose';
 export class UserCommunityRepository {
   constructor() {}
 
+  public getUserCommunity = async (userId: IUserCommunity['userId'], communityId: IUserCommunity['communityId']) => {
+    return UserCommunityModel.findOne({ userId, communityId }).lean();
+  };
+
   public subscribeUserToCommunity = async (
     userId: IUserCommunity['userId'],
     communityId: IUserCommunity['communityId'],

@@ -2,6 +2,7 @@ import { ICommentCreateInputDTO } from '@/interfaces/IComment';
 import { IPostInputDTO } from '@/interfaces/IPost';
 import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
+import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 
@@ -9,19 +10,28 @@ import { Logger } from 'winston';
 export class PostService {
   protected postRepositoryInstance: PostRepository;
   protected commentRepositoryInstance: CommentRepository;
+  protected userCommunityRepositoryInstance: UserCommunityRepository;
 
   constructor(
     postRepository: PostRepository,
     commentRepository: CommentRepository,
+    userCommunityRepository: UserCommunityRepository,
     @Inject('logger') private logger: Logger,
   ) {
     this.postRepositoryInstance = postRepository;
     this.commentRepositoryInstance = commentRepository;
+    this.userCommunityRepositoryInstance = userCommunityRepository;
   }
 
   public createPost = async (postInputDTO: IPostInputDTO) => {
     try {
       this.logger.silly('Creating post record');
+
+      const checkExistence = await this.userCommunityRepositoryInstance.getUserCommunity(
+        postInputDTO.userId,
+        postInputDTO.communityId,
+      );
+      if (!checkExistence) throw 'You must be subscribed to the community in order to create a new post.';
 
       const postRecord = await this.postRepositoryInstance.createPost({
         ...postInputDTO,
@@ -42,7 +52,7 @@ export class PostService {
     try {
       this.logger.silly('Creating comment record');
 
-      const commentRecord = await this.commentRepositoryInstance.createComment({...commentInputDTO});
+      const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
       if (!commentRecord) throw 'Comment cannot be created';
       const comment = { ...commentRecord };
 
