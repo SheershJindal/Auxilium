@@ -65,6 +65,7 @@ export class UserCommunityRepository {
             moderators: '$community.moderators',
             totalMembers: '$community.totalMembers',
             isClosed: '$community.isClosed',
+            joined: '$community.createdAt',
           },
         },
         {

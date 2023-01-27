@@ -6,6 +6,14 @@ import { IPost, IPostInputDTO } from '@/interfaces/IPost';
 export class PostRepository {
   constructor() {}
 
+  public getPostById = async (postId: IPost['_id']) => {
+    try {
+      const record = await PostModel.findOne({ _id: postId }).lean();
+      return record;
+    } catch (e) {
+      throw e;
+    }
+  };
   public createPost = async (postInputDTO: IPostInputDTO): Promise<IPost | null> => {
     try {
       const post = await PostModel.create({ ...postInputDTO });

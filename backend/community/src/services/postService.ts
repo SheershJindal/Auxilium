@@ -52,6 +52,9 @@ export class PostService {
     try {
       this.logger.silly('Creating comment record');
 
+      const checkExistence = await this.postRepositoryInstance.getPostById(commentInputDTO.postId);
+      if (!checkExistence) throw 'The post does not exist';
+
       const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
       if (!commentRecord) throw 'Comment cannot be created';
       const comment = { ...commentRecord };
