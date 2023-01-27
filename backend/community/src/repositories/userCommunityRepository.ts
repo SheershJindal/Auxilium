@@ -1,0 +1,74 @@
+import { Service } from 'typedi';
+import UserCommunityModel from '@/models/userCommunity';
+import { IUserCommunity } from '@/interfaces/IUserCommunity';
+import { Types } from 'mongoose';
+
+@Service()
+export class UserCommunityRepository {
+  constructor() {}
+
+  public subscribeUserToCommunity = async (
+    userId: IUserCommunity['userId'],
+    communityId: IUserCommunity['communityId'],
+  ) => {
+    try {
+      const record = await UserCommunityModel.create({ userId: userId, communityId: communityId });
+      if (record) return record.toObject();
+      return null;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public getAllCommunitiesForUser = async (userId: IUserCommunity['userId']) => {
+    try {
+      const records = await UserCommunityModel.aggregate([
+        {
+          $match: {
+            userId: new Types.ObjectId(userId),
+          },
+        },
+        {
+          $lookup: {
+            from: 'communities',
+            localField: 'communityId',
+            foreignField: '_id',
+            as: 'community',
+          },
+        },
+        {
+          $unwind: '$community',
+        },
+        {
+          $addFields: {
+            name: '$community.name',
+            moderators: '$community.moderators',
+            totalMembers: '$community.totalMembers',
+            isClosed: '$community.isClosed',
+          },
+        },
+        {
+          $match: {
+            isClosed: false,
+          },
+        },
+        {
+          $project: {
+            community: 0,
+            isClosed: 0,
+            _id: 0,
+            __v: 0,
+          },
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ]);
+      return records;
+    } catch (e) {
+      throw e;
+    }
+  };
+}

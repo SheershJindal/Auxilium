@@ -1,4 +1,3 @@
-import { IRequest, IResponse } from '@/api/types/express';
 import { celebrate, Joi } from 'celebrate';
 import { Router } from 'express';
 import Container from 'typedi';
@@ -12,5 +11,9 @@ export default (app: Router) => {
 
   app.use('/community', route);
 
-  route.post('/create', ctrl.createCommunity)
+  route.post('/create', ctrl.createCommunity);
+
+  route.post('/subscribe/:communityId', middlewares.isAuth, ctrl.subscribeToCommunity);
+
+  route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 };

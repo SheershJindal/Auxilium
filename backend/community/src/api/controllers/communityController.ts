@@ -1,8 +1,10 @@
 import { ICommunityInputDTO } from '@/interfaces/ICommunity';
+import { IUserCommunity } from '@/interfaces/IUserCommunity';
 import CommunityService from '@/services/communityService';
 import { NextFunction, Request, Response } from 'express';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
+import { INextFunction, IRequest, IResponse } from '../types/express';
 import { Result } from '../util/result';
 
 @Service()
@@ -23,6 +25,33 @@ export class CommunityController {
 
       const community = await this.communityServiceInstance.createCommunity({ moderatorId, name });
       return res.status(200).json(Result.success(community));
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
+  public subscribeToCommunity = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Subscribe to Community endpoint with %o', { body: req.body, params: req.params });
+    try {
+      const userId = req.currentUser.userId;
+      const communityId = req.params.communityId as unknown as IUserCommunity['communityId'];
+
+      const userCommunity = await this.communityServiceInstance.subscribeToCommunity(userId, communityId);
+      return res.status(200).json(Result.success(userCommunity));
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
+  public getAllCommunitiesForUser = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling My Communities endpoint with %o', { body: req.body, params: req.params });
+
+    try {
+      const userId = req.currentUser.userId;
+      const communities = await this.communityServiceInstance.getAllCommunitiesForUser(userId);
+      return res.status(200).json(Result.success(communities));
     } catch (error) {
       this.logger.error('🔥 error: %o', error);
       return next(error);
