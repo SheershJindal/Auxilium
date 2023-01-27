@@ -1,4 +1,6 @@
+import { ICommentCreateInputDTO } from '@/interfaces/IComment';
 import { IPostInputDTO } from '@/interfaces/IPost';
+import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
@@ -6,8 +8,15 @@ import { Logger } from 'winston';
 @Service()
 export class PostService {
   protected postRepositoryInstance: PostRepository;
-  constructor(postRepository: PostRepository, @Inject('logger') private logger: Logger) {
+  protected commentRepositoryInstance: CommentRepository;
+
+  constructor(
+    postRepository: PostRepository,
+    commentRepository: CommentRepository,
+    @Inject('logger') private logger: Logger,
+  ) {
     this.postRepositoryInstance = postRepository;
+    this.commentRepositoryInstance = commentRepository;
   }
 
   public createPost = async (postInputDTO: IPostInputDTO) => {
@@ -24,6 +33,23 @@ export class PostService {
       Reflect.deleteProperty(post, 'updatedAt');
 
       return post;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public createComment = async (commentInputDTO: ICommentCreateInputDTO) => {
+    try {
+      this.logger.silly('Creating comment record');
+
+      const commentRecord = await this.commentRepositoryInstance.createComment({...commentInputDTO});
+      if (!commentRecord) throw 'Comment cannot be created';
+      const comment = { ...commentRecord };
+
+      Reflect.deleteProperty(comment, 'createdAt');
+      Reflect.deleteProperty(comment, 'updatedAt');
+
+      return comment;
     } catch (e) {
       throw e;
     }

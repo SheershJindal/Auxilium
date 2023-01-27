@@ -11,4 +11,6 @@ export default (app: Router) => {
   app.use('/post', route);
 
   route.post('/create', middlewares.isAuth, ctrl.createPost);
+
+  route.post('/:postId/comment', middlewares.isAuth, ctrl.createComment);
 };
