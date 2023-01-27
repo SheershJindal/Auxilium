@@ -23,7 +23,7 @@ export class PostController {
       const userId = req.currentUser.userId;
       const type = req.body.type as IPostInputDTO['type'];
       const data = req.body.data as IPostInputDTO['data'];
-      const communityId = req.body.communityId as IPostInputDTO['communityId'];
+      const communityId = req.params.communityId as unknown as IPostInputDTO['communityId'];
 
       const post = await this.postServiceInstance.createPost({ userId, communityId, data, type });
       return res.status(200).json(Result.success(post));
