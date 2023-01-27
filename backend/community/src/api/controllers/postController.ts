@@ -17,7 +17,7 @@ export class PostController {
   }
 
   public createPost = async (req: IRequest, res: IResponse, next: INextFunction) => {
-    this.logger.debug('Calling Create Post endpoint with body: %o', req.body);
+    this.logger.debug('Calling Create Post endpoint with %o', { body: req.body, params: req.params });
 
     try {
       const userId = req.currentUser.userId;
@@ -34,7 +34,7 @@ export class PostController {
   };
 
   public createComment = async (req: IRequest, res: IResponse, next: INextFunction) => {
-    this.logger.debug('Calling Create Comment endpoint with body: %s', req.params.id);
+    this.logger.debug('Calling Create Comment endpoint with %o', { body: req.body, params: req.params });
 
     try {
       const userId = req.currentUser.userId;
