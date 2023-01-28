@@ -56,6 +56,9 @@ export class PostService {
       if (!checkExistence) throw 'The post does not exist';
 
       const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
+      if (commentInputDTO.parentId) {
+        await this.commentRepositoryInstance.linkCommentToParent(commentRecord._id, commentInputDTO.parentId);
+      }
       if (!commentRecord) throw 'Comment cannot be created';
       const comment = { ...commentRecord };
 

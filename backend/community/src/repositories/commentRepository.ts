@@ -17,6 +17,21 @@ export class CommentRepository {
     }
   };
 
+  public linkCommentToParent = async (commentId: IComment['_id'], parentId: IComment['parentId']) => {
+    try {
+      const parentComment = await CommentModel.findOneAndUpdate(
+        { _id: parentId },
+        { $push: { children: new Types.ObjectId(commentId) } },
+        { new: true },
+      ).lean();
+      if (!parentComment) throw 'The parent comment does not exist';
+
+      return parentComment;
+    } catch (e) {
+      throw e;
+    }
+  };
+
   public likeUnlikeComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
     /**
      * Add userId to liked by array

@@ -51,7 +51,7 @@ export default class CommunityService {
         communityId,
       );
       if (!userCommunitiesRecord) throw 'Cannot subscribe to the community';
-      
+
       const updatedCommunity = await this.communityRepositoryInstance.increaseTotalMembersForCommunity(communityId, 1);
 
       const userCommunity = { ...userCommunitiesRecord };
@@ -83,7 +83,7 @@ export default class CommunityService {
     this.logger.silly('Getting all user subscribed communities');
     try {
       const userCommunitiesRecords = await this.userCommunityRepositoryInstance.getAllCommunitiesForUser(userId);
-      const results = userCommunitiesRecords.map(({ createdAt, updatedAt, ...restData }) => restData);
+      const results = userCommunitiesRecords.map(({ createdAt, updatedAt, userId, ...restData }) => restData);
 
       return results;
     } catch (error) {
