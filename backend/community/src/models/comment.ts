@@ -3,14 +3,19 @@ import mongoose from 'mongoose';
 
 const Comment = new mongoose.Schema(
   {
-    parentId: mongoose.Types.ObjectId,
+    parentId: {
+      type: mongoose.Types.ObjectId,
+      index: true,
+    },
     postId: {
       type: mongoose.Types.ObjectId,
       required: true,
+      index: true,
     },
     userId: {
       type: mongoose.Types.ObjectId,
       required: true,
+      index: true,
     },
     children: [{ type: mongoose.Types.ObjectId }],
     content: {

@@ -19,10 +19,12 @@ const Post = new mongoose.Schema(
     communityId: {
       type: mongoose.Types.ObjectId,
       required: true,
+      index:true
     },
     userId: {
       type: mongoose.Types.ObjectId,
       required: true,
+      index:true
     },
     likes: {
       type: Number,
