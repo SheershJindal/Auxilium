@@ -31,6 +31,11 @@ const Comment = new mongoose.Schema(
       default: 0,
     },
     likedBy: [{ type: mongoose.Types.ObjectId }],
+    dislikes: {
+      type: Number,
+      default: 0,
+    },
+    dislikedBy: [{ type: mongoose.Types.ObjectId }],
   },
   { timestamps: true },
 );

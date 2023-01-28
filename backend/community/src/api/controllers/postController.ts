@@ -1,4 +1,4 @@
-import { ICommentCreateInputDTO } from '@/interfaces/IComment';
+import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
 import { IPostInputDTO } from '@/interfaces/IPost';
 import { PostService } from '@/services/postService';
 import { Inject, Service } from 'typedi';
@@ -43,6 +43,38 @@ export class PostController {
       const parentId = req.body.parentId || null;
 
       const comment = await this.postServiceInstance.createComment({ userId, postId, content, parentId });
+      return res.status(200).json(Result.success(comment));
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
+  public likeUnlikeComment = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Like/Unlike Comment endpoint with %o', { body: req.body, params: req.params });
+
+    try {
+      const userId = req.currentUser.userId;
+      const commentId = req.params.commentId as unknown as IComment['_id'];
+
+      const comment = await this.postServiceInstance.likeUnlikeComment(userId, commentId);
+
+      return res.status(200).json(Result.success(comment));
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
+  public dislikeUndislikeComment = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Dislike/Undislike Comment endpoint with %o', { body: req.body, params: req.params });
+
+    try {
+      const userId = req.currentUser.userId;
+      const commentId = req.params.commentId as unknown as IComment['_id'];
+
+      const comment = await this.postServiceInstance.dislikeUndislikeComment(userId, commentId);
+
       return res.status(200).json(Result.success(comment));
     } catch (error) {
       this.logger.error('🔥 error: %o', error);

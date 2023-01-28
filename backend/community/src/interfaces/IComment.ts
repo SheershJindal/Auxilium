@@ -8,8 +8,10 @@ export interface IComment {
   parentId?: Types.ObjectId;
   children: Array<Types.ObjectId>;
   isEdited?: Boolean;
-  likes: Number;
+  likes: number;
   likedBy: Array<Types.ObjectId>;
+  dislikes: number;
+  dislikedBy: Array<Types.ObjectId>;
   createdAt: Date;
   updatedAt: Date;
 }
