@@ -28,7 +28,6 @@ export class PostController {
       const post = await this.postServiceInstance.createPost({ userId, communityId, data, type });
       return res.status(200).json(Result.success(post));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -39,11 +38,10 @@ export class PostController {
     try {
       const userId = req.currentUser.userId;
       const postId = req.params.postId as unknown as ICommentCreateInputDTO['postId'];
-      
+
       const post = await this.postServiceInstance.getPost(userId, postId);
-      return res.status(200).json(Result.success(post))
+      return res.status(200).json(Result.success(post));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -60,7 +58,6 @@ export class PostController {
       const comment = await this.postServiceInstance.createComment({ userId, postId, content, parentId });
       return res.status(200).json(Result.success(comment));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -76,7 +73,6 @@ export class PostController {
 
       return res.status(200).json(Result.success(comment));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -92,7 +88,6 @@ export class PostController {
 
       return res.status(200).json(Result.success(comment));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };

@@ -26,7 +26,6 @@ export class CommunityController {
       const community = await this.communityServiceInstance.createCommunity({ moderatorId, name });
       return res.status(200).json(Result.success(community));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -40,7 +39,6 @@ export class CommunityController {
       const userCommunity = await this.communityServiceInstance.subscribeToCommunity(userId, communityId);
       return res.status(200).json(Result.success(userCommunity));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -54,7 +52,6 @@ export class CommunityController {
       const status = await this.communityServiceInstance.leaveCommunity(userId, communityId);
       return res.status(200).json(Result.success(status));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };
@@ -67,7 +64,6 @@ export class CommunityController {
       const communities = await this.communityServiceInstance.getAllCommunitiesForUser(userId);
       return res.status(200).json(Result.success(communities));
     } catch (error) {
-      this.logger.error('🔥 error: %o', error);
       return next(error);
     }
   };

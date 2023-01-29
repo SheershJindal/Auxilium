@@ -16,7 +16,7 @@ const getTokenFromHeader = (req): string => {
 };
 
 export const checkToken = (token: string, isAuth = true): IToken => {
-  const Logger: Logger = Container.get('logger');
+  const logger: Logger = Container.get('logger');
   if (!token && isAuth)
     throw { status: 401, message: 'This is an authenticated resource, you must be logged in to access it.' };
   try {
@@ -27,23 +27,22 @@ export const checkToken = (token: string, isAuth = true): IToken => {
       /** @TODO here, we reissue the token using the refresh token from the database  */
     }
 
-    Logger.error('🔥 Error in verifying token: %o', err);
+    logger.error('🔥 Error in verifying token: %o', err);
     throw err;
   }
 };
 
 const isAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
-  const Logger: Logger = Container.get('logger');
+  const logger: Logger = Container.get('logger');
 
   try {
     const tokenFromHeader = getTokenFromHeader(req);
     const token = checkToken(tokenFromHeader);
-    Logger.debug('User authenticated %o', token);
+    logger.debug('User authenticated %o', token);
 
     req.currentUser = token;
     return next();
   } catch (e) {
-    Logger.error('🔥 Error attaching user to req: %o', e);
     return next(e);
   }
 };
