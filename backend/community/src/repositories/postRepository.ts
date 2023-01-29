@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import PostModel from '@/models/post';
 import { IPost, IPostInputDTO } from '@/interfaces/IPost';
+import { Types } from 'mongoose';
 
 @Service()
 export class PostRepository {
@@ -8,8 +9,38 @@ export class PostRepository {
 
   public getPostById = async (postId: IPost['_id']) => {
     try {
-      const record = await PostModel.findOne({ _id: postId }).lean();
-      return record;
+      const record = await PostModel.aggregate([
+        {
+          $match: {
+            _id: new Types.ObjectId(postId),
+          },
+        },
+        {
+          $lookup: {
+            from: 'user',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        {
+          $unwind: '$user',
+        },
+        {
+          $addFields: {
+            username: '$user.username',
+            userRole: '$user.role',
+            isUserBanned: '$user.isBanned',
+          },
+        },
+        {
+          $project: {
+            user: 0,
+          },
+        },
+      ]).limit(1);
+      if (!record || record.length == 0) return null;
+      return record[0];
     } catch (e) {
       throw e;
     }

@@ -19,18 +19,23 @@ const Post = new mongoose.Schema(
     communityId: {
       type: mongoose.Types.ObjectId,
       required: true,
-      index:true
+      index: true,
     },
     userId: {
       type: mongoose.Types.ObjectId,
       required: true,
-      index:true
+      index: true,
     },
     likes: {
       type: Number,
       default: 0,
     },
+    dislikes: {
+      type: Number,
+      default: 0,
+    },
     likedBy: [{ type: mongoose.Types.ObjectId }],
+    dislikedBy: [{ type: mongoose.Types.ObjectId }],
     type: {
       type: String,
       enum: ['Announcement', 'General'],

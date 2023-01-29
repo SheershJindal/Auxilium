@@ -12,6 +12,8 @@ export default (app: Router) => {
 
   route.post('/:communityId', middlewares.isAuth, ctrl.createPost);
 
+  route.get('/:postId', middlewares.isAuth, ctrl.getPost);
+
   route.post('/:postId/comment', middlewares.isAuth, ctrl.createComment);
 
   route.patch('/comment/:commentId/likeUnlike', middlewares.isAuth, ctrl.likeUnlikeComment);

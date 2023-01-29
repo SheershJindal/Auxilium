@@ -48,6 +48,46 @@ export class PostService {
     }
   };
 
+  public getPost = async (userId, postId) => {
+    const postRecord = await this.postRepositoryInstance.getPostById(postId);
+    if (!postRecord) throw 'The post does not exist.';
+    const commentsRecord = await this.commentRepositoryInstance.getCommentsForPost(postId);
+    const postObj = {};
+    postObj['_id'] = postRecord._id;
+    postObj['likes'] = postRecord.likes;
+    postObj['dislikes'] = postRecord.dislikes;
+    postObj['createdAt'] = postRecord.createdAt;
+    postObj['username'] = postRecord['username'];
+
+    let likedByMe = false;
+    let dislikedByMe = false;
+
+    for (let likedID of postRecord['likedBy']) {
+      if (userId == likedID) {
+        likedByMe = true;
+        break;
+      }
+    }
+
+    if (!likedByMe)
+      for (let dislikedID of postRecord['dislikedBy']) {
+        if (userId == dislikedID) {
+          dislikedByMe = true;
+          break;
+        }
+      }
+    postObj['likedByMe'] = likedByMe;
+    postObj['dislikedByMe'] = dislikedByMe;
+
+    postObj['content'] = postRecord.data.content;
+    postObj['imageURI'] = postRecord.data['imageURI'] || null;
+    postObj['videoURI'] = postRecord.data['videoURI'] || null;
+
+    const commentsTree = this.buildCommentsTree(commentsRecord, userId);
+
+    return { post: postObj, comments: commentsTree };
+  };
+
   public createComment = async (commentInputDTO: ICommentCreateInputDTO) => {
     try {
       this.logger.silly('Creating comment record');
@@ -136,4 +176,63 @@ export class PostService {
       throw e;
     }
   };
+
+  private buildCommentsTree = (comments: IComment[], userId) => {
+    const map = {};
+
+    comments.map(comment => {
+      map[comment['_id'].toString()] = comment;
+    });
+
+    const recursiveBuild = (segregatedCommentIds: IComment['_id'][]) => {
+      let arr = [];
+      for (let commentId of segregatedCommentIds) {
+        let comment = { ...map[commentId.toString()] };
+        if (!comment['_id']) break;
+
+        if (comment['children'] && comment['children'].length > 0) {
+          let childrenIds = comment['children'];
+          const childrenComments = recursiveBuild(childrenIds);
+          comment['children'] = childrenComments;
+        }
+
+        let dislikedByMe = false;
+        let likedByMe = false;
+
+        for (let dislikedById of comment['dislikedBy']) {
+          if (userId == dislikedById) {
+            dislikedByMe = true;
+            break;
+          }
+        }
+        if (!dislikedByMe)
+          for (let likedById of comment['likedBy']) {
+            if (userId == likedById) {
+              likedByMe = true;
+              break;
+            }
+          }
+        delete comment.dislikedBy;
+        delete comment.likedBy;
+        delete comment.__v;
+
+        comment['likedByMe'] = likedByMe;
+        comment['dislikedByMe'] = dislikedByMe;
+        arr.push(comment);
+      }
+      arr.sort((a, b) => b.createdAt - a.createdAt);
+      return arr;
+    };
+
+    let rootLevelIDs = [];
+    comments.map(comment => {
+      if (!comment.parentId) {
+        rootLevelIDs.push(comment._id);
+      }
+    });
+    const arr = recursiveBuild(rootLevelIDs);
+    return arr;
+  };
+
+  private recursiveBuild = () => {};
 }

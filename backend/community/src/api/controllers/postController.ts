@@ -33,6 +33,21 @@ export class PostController {
     }
   };
 
+  public getPost = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Get Post endpoint with %o', { query: req.query, params: req.params });
+
+    try {
+      const userId = req.currentUser.userId;
+      const postId = req.params.postId as unknown as ICommentCreateInputDTO['postId'];
+      
+      const post = await this.postServiceInstance.getPost(userId, postId);
+      return res.status(200).json(Result.success(post))
+    } catch (error) {
+      this.logger.error('🔥 error: %o', error);
+      return next(error);
+    }
+  };
+
   public createComment = async (req: IRequest, res: IResponse, next: INextFunction) => {
     this.logger.debug('Calling Create Comment endpoint with %o', { body: req.body, params: req.params });
 

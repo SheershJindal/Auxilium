@@ -5,8 +5,10 @@ export interface IPost {
   data: IPostData;
   communityId: Types.ObjectId;
   userId: Types.ObjectId;
-  likes: Number;
+  likes: number;
+  dislikes: number;
   likedBy: Types.ObjectId[];
+  dislikedBy: Types.ObjectId[];
   type: 'Announcement' | 'General';
   createdAt: Date;
   updatedAt: Date;

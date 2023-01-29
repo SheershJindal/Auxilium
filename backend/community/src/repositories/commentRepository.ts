@@ -32,6 +32,15 @@ export class CommentRepository {
     }
   };
 
+  public getCommentsForPost = async (postId: IComment['postId']) => {
+    try {
+      const comments = await CommentModel.find({ postId }).lean();
+      return comments;
+    } catch (e) {
+      throw e;
+    }
+  };
+
   public likeUnlikeComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
     /**
      * Add userId to liked by array
