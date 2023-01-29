@@ -29,7 +29,7 @@ const PostItem = ({ id, user, postedAt, post, photoUrl, likes, comments, imageZo
                 <Entypo name="dots-three-horizontal" size={16} color={colors.secondary} />
             </TouchableOpacity>
         </View>
-        <View style={postStyles.post}>
+        <View style={{ ...postStyles.post, marginLeft: isShownInDiscover ? 64 : 0 }}>
             <Text>{post}</Text>
             <TouchableOpacity onPress={openModal}>
                 <Image style={postStyles.image} source={{ uri: photoUrl }} />
