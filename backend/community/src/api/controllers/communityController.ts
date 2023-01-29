@@ -1,4 +1,4 @@
-import { ICommunityInputDTO } from '@/interfaces/ICommunity';
+import { ICommunity, ICommunityInputDTO } from '@/interfaces/ICommunity';
 import { IUserCommunity } from '@/interfaces/IUserCommunity';
 import CommunityService from '@/services/communityService';
 import { NextFunction, Request, Response } from 'express';
@@ -63,6 +63,20 @@ export class CommunityController {
       const userId = req.currentUser.userId;
       const communities = await this.communityServiceInstance.getAllCommunitiesForUser(userId);
       return res.status(200).json(Result.success(communities));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  public getPostsForCommunityPaginated = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling get posts for community endpoint with %o', { query: req.query, params: req.params });
+
+    try {
+      const userId = req.currentUser.userId;
+      const communityId = req.params.communityId as unknown as ICommunity['_id'];
+      const pageNumber = +req.query.pageNumber as unknown as number;
+      const posts = await this.communityServiceInstance.getPostsForCommunityPaginated(userId, communityId, pageNumber);
+      return res.status(200).json(Result.success(posts));
     } catch (error) {
       return next(error);
     }

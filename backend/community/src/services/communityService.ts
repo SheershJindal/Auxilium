@@ -1,6 +1,8 @@
-import { ICommunityInputDTO } from '@/interfaces/ICommunity';
+import { ICommunity, ICommunityInputDTO } from '@/interfaces/ICommunity';
+import { IToken } from '@/interfaces/IToken';
 import { IUserCommunity } from '@/interfaces/IUserCommunity';
 import { CommunityRepository } from '@/repositories/communityRepository';
+import { PostRepository } from '@/repositories/postRepository';
 import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
@@ -9,14 +11,17 @@ import { Logger } from 'winston';
 export default class CommunityService {
   protected communityRepositoryInstance: CommunityRepository;
   protected userCommunityRepositoryInstance: UserCommunityRepository;
+  protected postRepositoryInstance: PostRepository;
 
   constructor(
     communityRepository: CommunityRepository,
     userCommunityRepository: UserCommunityRepository,
+    postRepository: PostRepository,
     @Inject('logger') private logger: Logger,
   ) {
     this.communityRepositoryInstance = communityRepository;
     this.userCommunityRepositoryInstance = userCommunityRepository;
+    this.postRepositoryInstance = postRepository;
   }
 
   public createCommunity = async (communityInputDTO: ICommunityInputDTO) => {
@@ -86,6 +91,53 @@ export default class CommunityService {
       const results = userCommunitiesRecords.map(({ createdAt, updatedAt, userId, ...restData }) => restData);
 
       return results;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  public getPostsForCommunityPaginated = async (
+    userId: IToken['userId'],
+    communityId: ICommunity['_id'],
+    pageNumber = 0,
+  ) => {
+    try {
+      const limit = 10;
+      const posts = await this.postRepositoryInstance.getPostsForCommunityPaginated(communityId, pageNumber, limit);
+
+      const postsArr = posts
+        .filter(post => !post.isUserBanned)
+        .map(post => {
+          let likedByMe = false;
+          let dislikedByMe = false;
+          for (let likedId of post.likedBy) {
+            if (likedId == userId) {
+              likedByMe = true;
+              break;
+            }
+          }
+          if (!likedByMe)
+            for (let dislikedId of post.dislikedBy) {
+              if (dislikedId == userId) {
+                dislikedByMe = true;
+                break;
+              }
+            }
+          post['likedByMe'] = likedByMe;
+          post['dislikedByMe'] = dislikedByMe;
+          post['createdBy'] = {};
+          post['createdBy']['_id'] = post.userId;
+          post['createdBy']['username'] = post.username;
+
+          delete post.userId;
+          delete post.likedBy;
+          delete post.dislikedBy;
+          delete post.__v;
+          delete post.isUserBanned;
+          delete post.username;
+          return post;
+        });
+      return postsArr;
     } catch (error) {
       throw error;
     }

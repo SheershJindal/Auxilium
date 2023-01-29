@@ -54,4 +54,33 @@ export class PostRepository {
       throw e;
     }
   };
+
+  public getPostsForCommunityPaginated = async (
+    communityId: IPost['communityId'],
+    pageNumber: number,
+    limit: number,
+  ) => {
+    try {
+      const posts = await PostModel.aggregate([
+        { $match: { communityId: new Types.ObjectId(communityId) } },
+        { $sort: { createdAt: -1 } },
+        { $skip: pageNumber * limit },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: 'user',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        { $unwind: '$user' },
+        { $addFields: { username: '$user.username', isUserBanned: '$user.isBanned' } },
+        { $project: { user: 0 } },
+      ]);
+      return posts;
+    } catch (e) {
+      throw e;
+    }
+  };
 }
