@@ -13,9 +13,9 @@ export default (app: Router) => {
 
   route.post('/create', ctrl.createCommunity);
 
-  route.post('/subscribe/:communityId', middlewares.isAuth, ctrl.subscribeToCommunity);
+  route.post('/:communityId/subscribe', middlewares.isAuth, ctrl.subscribeToCommunity);
 
-  route.delete('/leave/:communityId', middlewares.isAuth, ctrl.leaveCommunity);
+  route.delete('/:communityId/leave', middlewares.isAuth, ctrl.leaveCommunity);
 
   route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 };
