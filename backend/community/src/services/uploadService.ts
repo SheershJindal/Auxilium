@@ -26,7 +26,7 @@ export class UploadService {
       photos.map(photo => {
         const fileName = photo.filename;
         const path = resolve(photo.path);
-        const metaData = { userId };
+        const metaData = { userId, original_name: photo.originalname };
         const fileType = photo.mimetype;
         photosPromises.push(this.storageServiceInstance.uploadToStore(fileName, path, metaData, fileType));
       });
@@ -37,7 +37,7 @@ export class UploadService {
       videos.map(video => {
         const fileName = video.filename;
         const path = resolve(video.path);
-        const metaData = { userId };
+        const metaData = { userId, original_name: video.originalname };
         const fileType = video.mimetype;
         videosPromises.push(this.storageServiceInstance.uploadToStore(fileName, path, metaData, fileType));
       });
