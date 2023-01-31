@@ -47,12 +47,20 @@ export default ({ app }: { app: express.Application }) => {
   /// error handlers
   app.use((err, req, res, next) => {
     /**
-     * Handle 401 thrown by jwt library
+     * Handles authorization errors
      */
     if (err.status === 401) {
       logger.warn('⚠️ warn: %o', err);
       res.status(err.status);
       return res.json(Result.error(err)).end();
+    }
+
+    /**
+     * Handles multer errors
+     */
+    if (err.code == 'LIMIT_UNEXPECTED_FILE') {
+      res.status(413);
+      return res.json(Result.error('Exceeded the expected file limit'));
     }
     return next(err);
   });
