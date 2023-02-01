@@ -1,5 +1,5 @@
 import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
-import { IPostInputDTO } from '@/interfaces/IPost';
+import { IPost, IPostInputDTO } from '@/interfaces/IPost';
 import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
 import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
@@ -110,6 +110,73 @@ export class PostService {
       throw e;
     }
   };
+
+  public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
+    try {
+      this.logger.silly('Updating comment record');
+
+      const postRecord = await this.postRepositoryInstance.likeUnlikePost(userId, postId);
+      let post = { ...postRecord };
+
+      let likedBy = [];
+      let dislikedBy = [];
+      post.dislikedBy.map(id => dislikedBy.push(id.toString()));
+      post.likedBy.map(id => likedBy.push(id.toString()));
+      post['likedByMe'] = false;
+      post['dislikedByMe'] = false;
+
+      if (likedBy.includes(userId.toString())) {
+        post['likedByMe'] = true;
+      }
+      if (dislikedBy.includes(userId.toString())) {
+        post['dislikedByMe'] = true;
+      }
+      delete post.likedBy;
+      delete post.dislikedBy;
+
+      Reflect.deleteProperty(post, 'createdAt');
+      Reflect.deleteProperty(post, 'updatedAt');
+      Reflect.deleteProperty(post, '__v');
+
+      return post;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public dislikeUndislikePost = async (userId: IPost['userId'], postId: IPost['_id']) =>{
+    try {
+      this.logger.silly('Updating comment record');
+
+      const postRecord = await this.postRepositoryInstance.dislikeUndislikePost(userId, postId);
+
+      let post = { ...postRecord };
+
+      let likedBy = [];
+      let dislikedBy = [];
+      post.dislikedBy.map(id => dislikedBy.push(id.toString()));
+      post.likedBy.map(id => likedBy.push(id.toString()));
+      post['likedByMe'] = false;
+      post['dislikedByMe'] = false;
+
+      if (likedBy.includes(userId.toString())) {
+        post['likedByMe'] = true;
+      }
+      if (dislikedBy.includes(userId.toString())) {
+        post['dislikedByMe'] = true;
+      }
+      delete post.likedBy;
+      delete post.dislikedBy;
+
+      Reflect.deleteProperty(post, 'createdAt');
+      Reflect.deleteProperty(post, 'updatedAt');
+      Reflect.deleteProperty(post, '__v');
+
+      return post;
+    } catch (e) {
+      throw e;
+    }
+  }
 
   public likeUnlikeComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
     try {

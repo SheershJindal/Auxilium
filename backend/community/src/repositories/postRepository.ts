@@ -45,6 +45,7 @@ export class PostRepository {
       throw e;
     }
   };
+
   public createPost = async (postInputDTO: IPostInputDTO): Promise<IPost | null> => {
     try {
       const post = await PostModel.create({ ...postInputDTO });
@@ -79,6 +80,93 @@ export class PostRepository {
         { $project: { user: 0 } },
       ]);
       return posts;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
+    try {
+      const isLiked = await PostModel.findOne({ _id: postId, likedBy: { $in: [new Types.ObjectId(userId)] } })
+        .limit(1)
+        .lean();
+
+      if (isLiked) {
+        // start process for unLiking the post
+        return await PostModel.findOneAndUpdate(
+          { _id: postId },
+          { $inc: { likes: -1 }, $pull: { likedBy: new Types.ObjectId(userId) } },
+          { new: true },
+        ).lean();
+      }
+
+      // start process for liking the post
+      const isDisliked = await PostModel.findOne({
+        _id: postId,
+        dislikedBy: { $in: [new Types.ObjectId(userId)] },
+      }).lean();
+
+      if (isDisliked) {
+        return await PostModel.findOneAndUpdate(
+          { _id: postId },
+          {
+            $inc: { dislikes: -1, likes: 1 },
+            $pull: { dislikedBy: new Types.ObjectId(userId) },
+            $push: { likedBy: new Types.ObjectId(userId) },
+          },
+          { new: true },
+        ).lean();
+      }
+
+      return await PostModel.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { likes: 1 }, $push: { likedBy: new Types.ObjectId(userId) } },
+        { new: true },
+      ).lean();
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public dislikeUndislikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
+    try {
+      const isDisliked = await PostModel.findOne({
+        _id: postId,
+        dislikedBy: { $in: [new Types.ObjectId(userId)] },
+      }).lean();
+
+      if (isDisliked) {
+        // start process for undisliking the post
+        return await PostModel.findOneAndUpdate(
+          { _id: postId },
+          { $inc: { dislikes: -1 }, $pull: { dislikedBy: new Types.ObjectId(userId) } },
+          { new: true },
+        ).lean();
+      }
+
+      // start process for disliking the comment
+      const isLiked = await PostModel.findOne({
+        _id: postId,
+        likedBy: { $in: [new Types.ObjectId(userId)] },
+      }).lean();
+
+      if (isLiked) {
+        return await PostModel.findOneAndUpdate(
+          { _id: postId },
+          {
+            $inc: { likes: -1, dislikes: 1 },
+            $pull: { likedBy: new Types.ObjectId(userId) },
+            $push: { dislikedBy: new Types.ObjectId(userId) },
+          },
+          { new: true },
+        ).lean();
+      }
+
+      return await PostModel.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { dislikes: 1 }, $push: { dislikedBy: new Types.ObjectId(userId) } },
+        { new: true },
+      ).lean();
     } catch (e) {
       throw e;
     }
