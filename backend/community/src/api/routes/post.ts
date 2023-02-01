@@ -22,6 +22,8 @@ export default (app: Router) => {
 
   route.post('/:postId/comment', middlewares.isAuth, ctrl.createComment);
 
+  route.delete('/comment/:commentId', middlewares.isAuth, ctrl.deleteComment);
+
   route.patch('/comment/:commentId/likeUnlike', middlewares.isAuth, ctrl.likeUnlikeComment);
 
   route.patch('/comment/:commentId/dislikeUndislike', middlewares.isAuth, ctrl.dislikeUndislikeComment);

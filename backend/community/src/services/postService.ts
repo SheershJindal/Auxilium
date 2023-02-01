@@ -49,20 +49,23 @@ export class PostService {
   };
 
   /**
-   * Allows deletion of post from user who created the post or 
+   * Allows deletion of post from user who created the post or
    * the moderator of the community for which the post belongs to
    */
   public deletePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
     try {
-      this.logger.silly('Soft deleting post record');
-
       const postRecord = await this.postRepositoryInstance.getPostByIdWithModerator(postId);
       if (!postRecord) throw 'The post does not exist';
+
       const moderators = postRecord.moderators.map(moderator => moderator.toString());
+
       if (postRecord['userId'].toString() == userId.toString() || moderators.includes(userId.toString())) {
+        this.logger.silly('Soft deleting post record');
+
         const newRecord = await this.postRepositoryInstance.softDeletePost(postId);
         return { id: newRecord.insertedId };
       }
+      throw 'You are not authorized to delete this comment.';
     } catch (error) {
       throw error;
     }
@@ -106,29 +109,6 @@ export class PostService {
     const commentsTree = this.buildCommentsTree(commentsRecord, userId);
 
     return { post: postObj, comments: commentsTree };
-  };
-
-  public createComment = async (commentInputDTO: ICommentCreateInputDTO) => {
-    try {
-      this.logger.silly('Creating comment record');
-
-      const checkExistence = await this.postRepositoryInstance.getPostByIdAggregated(commentInputDTO.postId);
-      if (!checkExistence) throw 'The post does not exist';
-
-      const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
-      if (commentInputDTO.parentId) {
-        await this.commentRepositoryInstance.linkCommentToParent(commentRecord._id, commentInputDTO.parentId);
-      }
-      if (!commentRecord) throw 'Comment cannot be created';
-      const comment = { ...commentRecord };
-
-      Reflect.deleteProperty(comment, 'createdAt');
-      Reflect.deleteProperty(comment, 'updatedAt');
-
-      return comment;
-    } catch (e) {
-      throw e;
-    }
   };
 
   public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
@@ -195,6 +175,48 @@ export class PostService {
       return post;
     } catch (e) {
       throw e;
+    }
+  };
+
+  public createComment = async (commentInputDTO: ICommentCreateInputDTO) => {
+    try {
+      this.logger.silly('Creating comment record');
+
+      const checkExistence = await this.postRepositoryInstance.getPostByIdAggregated(commentInputDTO.postId);
+      if (!checkExistence) throw 'The post does not exist';
+
+      const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
+      if (commentInputDTO.parentId) {
+        await this.commentRepositoryInstance.linkCommentToParent(commentRecord._id, commentInputDTO.parentId);
+      }
+      if (!commentRecord) throw 'Comment cannot be created';
+      const comment = { ...commentRecord };
+
+      Reflect.deleteProperty(comment, 'createdAt');
+      Reflect.deleteProperty(comment, 'updatedAt');
+
+      return comment;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public deleteComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
+    try {
+      const commentRecord = await this.commentRepositoryInstance.getCommentByIdWithModerator(commentId);
+      if (!commentRecord) throw 'The comment does not exist';
+
+      const moderators = commentRecord.moderators.map(moderator => moderator.toString());
+
+      if (commentRecord.userId.toString() == userId.toString() || moderators.includes(userId.toString())) {
+        this.logger.silly('Soft deleting comment record');
+
+        const newRecord = await this.commentRepositoryInstance.softDeleteComment(commentId);
+        return { id: newRecord.insertedId };
+      }
+      throw 'You are not authorized to delete this comment.';
+    } catch (error) {
+      throw error;
     }
   };
 

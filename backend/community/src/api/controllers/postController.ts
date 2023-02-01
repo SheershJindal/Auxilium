@@ -33,7 +33,7 @@ export class PostController {
   };
 
   public deletePost = async (req: IRequest, res: IResponse, next: INextFunction) => {
-    this.logger.debug('Calling Delete Post endpoint with %o');
+    this.logger.debug('Calling Delete Post endpoint with params', req.params);
 
     try {
       const userId = req.currentUser.userId;
@@ -97,6 +97,20 @@ export class PostController {
       const parentId = req.body.parentId || null;
 
       const comment = await this.postServiceInstance.createComment({ userId, postId, content, parentId });
+      return res.status(200).json(Result.success(comment));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  public deleteComment = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Delete Comment endpoint with params', req.params);
+
+    try {
+      const userId = req.currentUser.userId;
+      const commentId = req.params.commentId as unknown as IComment['_id'];
+
+      const comment = await this.postServiceInstance.deleteComment(userId, commentId);
       return res.status(200).json(Result.success(comment));
     } catch (error) {
       return next(error);

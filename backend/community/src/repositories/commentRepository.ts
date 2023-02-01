@@ -1,11 +1,22 @@
 import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
+import { ICommunity } from '@/interfaces/ICommunity';
+import mongoose from '@/loaders/mongoose';
+import { Db } from 'mongodb';
 import CommentModel from '@/models/comment';
 import { Types } from 'mongoose';
 import { Service } from 'typedi';
 
 @Service()
 export class CommentRepository {
-  constructor() {}
+  protected db: Promise<Db>;
+
+  constructor() {
+    this.db = new Promise((resolve, reject) => {
+      mongoose()
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  }
 
   public createComment = async (commentInputDTO: ICommentCreateInputDTO) => {
     try {
@@ -39,6 +50,61 @@ export class CommentRepository {
     } catch (e) {
       throw e;
     }
+  };
+
+  public getCommentByIdWithModerator = async (
+    commentId: IComment['_id'],
+  ): Promise<IComment & { moderators: ICommunity['moderators'] }> => {
+    const records = await CommentModel.aggregate([
+      { $match: { _id: new Types.ObjectId(commentId) } },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postId',
+          foreignField: '_id',
+          as: 'posts',
+        },
+      },
+      { $unwind: '$posts' },
+      {
+        $lookup: {
+          from: 'communities',
+          localField: 'posts.communityId',
+          foreignField: '_id',
+          as: 'communities',
+        },
+      },
+      { $unwind: '$communities' },
+      {
+        $addFields: { moderators: '$communities.moderators' },
+      },
+      {
+        $project: {
+          communities: 0,
+          posts: 0,
+        },
+      },
+    ]).limit(1);
+    if (!records || records.length == 0) return null;
+    return records[0];
+  };
+
+  public softDeleteComment = async commentId => {
+    const db = await this.db;
+    const doc = await db.collection('comments').findOne({ _id: Types.ObjectId(commentId) });
+    if (doc.parentId) {
+      /**
+       * Unlink parent doc children array
+       */
+      const parentDoc = CommentModel.findOneAndUpdate(
+        { _id: Types.ObjectId(doc.parentId) },
+        { $pull: { children: new Types.ObjectId(doc._id) } },
+        { new: true },
+      ).lean();
+    }
+    const newDoc = await db.collection('deletedComments').insertOne({ ...doc, deletedAt: new Date() });
+    await db.collection('comments').deleteOne(doc);
+    return newDoc;
   };
 
   public likeUnlikeComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
