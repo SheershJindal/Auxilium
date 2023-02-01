@@ -2,12 +2,67 @@ import { Service } from 'typedi';
 import PostModel from '@/models/post';
 import { IPost, IPostInputDTO } from '@/interfaces/IPost';
 import { Types } from 'mongoose';
+import { Db } from 'mongodb';
+import mongoose from '@/loaders/mongoose';
+import { ICommunity } from '@/interfaces/ICommunity';
 
 @Service()
 export class PostRepository {
-  constructor() {}
+  protected db: Promise<Db>;
+
+  constructor() {
+    this.db = new Promise((resolve, reject) => {
+      mongoose()
+        .then(response => resolve(response))
+        .catch(err => reject(err));
+    });
+  }
 
   public getPostById = async (postId: IPost['_id']) => {
+    try {
+      const record = await PostModel.findOne({ _id: postId }).lean();
+      return record;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  public getPostByIdWithModerator = async (
+    postId: IPost['_id'],
+  ): Promise<IPost & { moderators: ICommunity['moderators'] }> => {
+    const record = await PostModel.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(postId),
+        },
+      },
+      {
+        $lookup: {
+          from: 'communities',
+          localField: 'communityId',
+          foreignField: '_id',
+          as: 'communities',
+        },
+      },
+      {
+        $unwind: '$communities',
+      },
+      {
+        $addFields: {
+          moderators: '$communities.moderators',
+        },
+      },
+      {
+        $project: {
+          communities: 0,
+        },
+      },
+    ]).limit(1);
+    if (!record || record.length == 0) return null;
+    return record[0];
+  };
+
+  public getPostByIdAggregated = async (postId: IPost['_id']) => {
     try {
       const record = await PostModel.aggregate([
         {
@@ -44,6 +99,14 @@ export class PostRepository {
     } catch (e) {
       throw e;
     }
+  };
+
+  public softDeletePost = async postId => {
+    const db = await this.db;
+    const doc = await db.collection('posts').findOne({ _id: Types.ObjectId(postId) });
+    const newDoc = await db.collection('deletedPosts').insertOne({ ...doc, deletedAt: new Date() });
+    await db.collection('posts').deleteOne(doc);
+    return newDoc;
   };
 
   public createPost = async (postInputDTO: IPostInputDTO): Promise<IPost | null> => {

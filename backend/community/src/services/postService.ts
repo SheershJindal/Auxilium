@@ -48,8 +48,28 @@ export class PostService {
     }
   };
 
+  /**
+   * Allows deletion of post from user who created the post or 
+   * the moderator of the community for which the post belongs to
+   */
+  public deletePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
+    try {
+      this.logger.silly('Soft deleting post record');
+
+      const postRecord = await this.postRepositoryInstance.getPostByIdWithModerator(postId);
+      if (!postRecord) throw 'The post does not exist';
+      const moderators = postRecord.moderators.map(moderator => moderator.toString());
+      if (postRecord['userId'].toString() == userId.toString() || moderators.includes(userId.toString())) {
+        const newRecord = await this.postRepositoryInstance.softDeletePost(postId);
+        return { id: newRecord.insertedId };
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   public getPost = async (userId, postId) => {
-    const postRecord = await this.postRepositoryInstance.getPostById(postId);
+    const postRecord = await this.postRepositoryInstance.getPostByIdAggregated(postId);
     if (!postRecord) throw 'The post does not exist.';
     const commentsRecord = await this.commentRepositoryInstance.getCommentsForPost(postId);
     const postObj = {};
@@ -92,7 +112,7 @@ export class PostService {
     try {
       this.logger.silly('Creating comment record');
 
-      const checkExistence = await this.postRepositoryInstance.getPostById(commentInputDTO.postId);
+      const checkExistence = await this.postRepositoryInstance.getPostByIdAggregated(commentInputDTO.postId);
       if (!checkExistence) throw 'The post does not exist';
 
       const commentRecord = await this.commentRepositoryInstance.createComment({ ...commentInputDTO });
@@ -144,7 +164,7 @@ export class PostService {
     }
   };
 
-  public dislikeUndislikePost = async (userId: IPost['userId'], postId: IPost['_id']) =>{
+  public dislikeUndislikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
     try {
       this.logger.silly('Updating comment record');
 
@@ -176,7 +196,7 @@ export class PostService {
     } catch (e) {
       throw e;
     }
-  }
+  };
 
   public likeUnlikeComment = async (userId: IComment['userId'], commentId: IComment['_id']) => {
     try {

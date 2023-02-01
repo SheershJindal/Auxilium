@@ -32,6 +32,19 @@ export class PostController {
     }
   };
 
+  public deletePost = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling Delete Post endpoint with %o');
+
+    try {
+      const userId = req.currentUser.userId;
+      const postId = req.params.postId as unknown as IPost['_id'];
+      const post = await this.postServiceInstance.deletePost(userId, postId);
+      return res.status(200).json(Result.success(post));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   public getPost = async (req: IRequest, res: IResponse, next: INextFunction) => {
     this.logger.debug('Calling Get Post endpoint with %o', { query: req.query, params: req.params });
 
