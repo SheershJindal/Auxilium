@@ -26,6 +26,15 @@ export class CommunityRepository {
     }
   };
 
+  public getAllCommunities = async () => {
+    try {
+      const communities = await CommunityModel.find().lean();
+      return communities;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   public createCommunity = async (communityInputDTO: ICommunityInputDTO) => {
     try {
       const db = await this.db;

@@ -47,4 +47,21 @@ const isAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
   }
 };
 
+export const isOfficerAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
+  const logger: Logger = Container.get('logger');
+
+  try {
+    const tokenFromHeader = getTokenFromHeader(req);
+    const token = checkToken(tokenFromHeader);
+    if (!(token.role == 'officer' || token.role == 'admin'))
+      return next('This is an authenticated resource, you must be logged in to access it.');
+    logger.debug('User authenticated %o', token);
+
+    req.currentUser = token;
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+};
+
 export default isAuth;

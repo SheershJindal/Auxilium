@@ -84,6 +84,21 @@ export default class CommunityService {
     }
   };
 
+  public getAllCommunities = async () => {
+    this.logger.silly('Getting all communities');
+
+    try {
+      const communitiesRecord = await this.communityRepositoryInstance.getAllCommunities();
+      const communities = [...communitiesRecord]
+        .filter(community => community.isClosed == false)
+        .map(({ createdAt, updatedAt, __v, ...restAttr }) => restAttr);
+
+      return communities;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   public getAllCommunitiesForUser = async (userId: IUserCommunity['userId']) => {
     this.logger.silly('Getting all user subscribed communities');
     try {

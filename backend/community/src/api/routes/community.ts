@@ -11,6 +11,8 @@ export default (app: Router) => {
 
   app.use('/community', route);
 
+  route.get('/', middlewares.isOfficerAuth, ctrl.getAllCommunities);
+
   route.get('/:communityId/posts', middlewares.isAuth, ctrl.getPostsForCommunityPaginated);
 
   route.post('/create', ctrl.createCommunity);

@@ -56,6 +56,16 @@ export class CommunityController {
     }
   };
 
+  public getAllCommunities = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    this.logger.debug('Calling all communities endpoint with');
+    try {
+      const communities = await this.communityServiceInstance.getAllCommunities();
+      return res.status(200).json(Result.success(communities));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   public getAllCommunitiesForUser = async (req: IRequest, res: IResponse, next: INextFunction) => {
     this.logger.debug('Calling My Communities endpoint with %o', { body: req.body, params: req.params });
 

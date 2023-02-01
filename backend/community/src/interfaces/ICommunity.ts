@@ -6,6 +6,8 @@ export interface ICommunity {
   totalMembers: number;
   isClosed?: Boolean;
   moderators: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface ICommunityInputDTO {
