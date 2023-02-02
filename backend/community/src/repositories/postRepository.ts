@@ -123,7 +123,7 @@ export class PostRepository {
     communityId: IPost['communityId'],
     pageNumber: number,
     limit: number,
-  ) => {
+  ): Promise<(IPost & { username: String; isUserBanned: boolean; __v: number })[]> => {
     try {
       const posts = await PostModel.aggregate([
         { $match: { communityId: new Types.ObjectId(communityId) } },

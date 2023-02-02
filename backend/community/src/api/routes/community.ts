@@ -13,7 +13,7 @@ export default (app: Router) => {
 
   route.get('/', middlewares.isOfficerAuth, ctrl.getAllCommunities);
 
-  route.get('/:communityId/posts', middlewares.isAuth, ctrl.getPostsForCommunityPaginated);
+  route.get('/:communityId', middlewares.isAuth, ctrl.getCommunityPaginated);
 
   route.post('/create', ctrl.createCommunity);
 

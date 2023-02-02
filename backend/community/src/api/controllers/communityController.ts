@@ -78,14 +78,14 @@ export class CommunityController {
     }
   };
 
-  public getPostsForCommunityPaginated = async (req: IRequest, res: IResponse, next: INextFunction) => {
+  public getCommunityPaginated = async (req: IRequest, res: IResponse, next: INextFunction) => {
     this.logger.debug('Calling get posts for community endpoint with %o', { query: req.query, params: req.params });
 
     try {
       const userId = req.currentUser.userId;
       const communityId = req.params.communityId as unknown as ICommunity['_id'];
-      const pageNumber = +req.query.pageNumber as unknown as number;
-      const posts = await this.communityServiceInstance.getPostsForCommunityPaginated(userId, communityId, pageNumber);
+      const pageNumber = +req.query.page as unknown as number;
+      const posts = await this.communityServiceInstance.getCommunityPaginated(userId, communityId, pageNumber);
       return res.status(200).json(Result.success(posts));
     } catch (error) {
       return next(error);

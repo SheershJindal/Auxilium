@@ -19,8 +19,7 @@ export class CommunityRepository {
   public getCommunity = async (communityId: ICommunity['_id']) => {
     try {
       const record = await CommunityModel.findOne({ _id: communityId }).lean();
-      if (record) return record;
-      return null;
+      return record;
     } catch (e) {
       throw e;
     }

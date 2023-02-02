@@ -111,13 +111,25 @@ export default class CommunityService {
     }
   };
 
-  public getPostsForCommunityPaginated = async (
-    userId: IToken['userId'],
-    communityId: ICommunity['_id'],
-    pageNumber = 0,
-  ) => {
+  public getCommunityPaginated = async (userId: IToken['userId'], communityId: ICommunity['_id'], pageNumber = 0) => {
     try {
       const limit = 10;
+
+      let isJoined = false;
+
+      const isUserJoined = await this.userCommunityRepositoryInstance.getUserCommunity(userId, communityId);
+      if (isUserJoined) isJoined = true;
+
+      const communityRecord = { ...(await this.communityRepositoryInstance.getCommunity(communityId)) };
+      if (!communityRecord || communityRecord.isClosed) throw 'The community does not exist';
+
+      const communityObj = {};
+      communityObj['_id'] = communityRecord._id;
+      communityObj['name'] = communityRecord.name;
+      communityObj['members'] = communityRecord.totalMembers;
+      communityObj['joined'] = isJoined;
+      communityObj['createdAt'] = communityRecord.createdAt;
+
       const posts = await this.postRepositoryInstance.getPostsForCommunityPaginated(communityId, pageNumber, limit);
 
       const postsArr = posts
@@ -152,7 +164,8 @@ export default class CommunityService {
           delete post.username;
           return post;
         });
-      return postsArr;
+      communityObj['posts'] = postsArr;
+      return communityObj;
     } catch (error) {
       throw error;
     }
