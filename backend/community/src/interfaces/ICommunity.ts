@@ -4,6 +4,8 @@ export interface ICommunity {
   _id: Types.ObjectId;
   name: String;
   totalMembers: number;
+  imageURI?: String;
+  description: String;
   isClosed?: Boolean;
   moderators: Types.ObjectId[];
   createdAt: Date;

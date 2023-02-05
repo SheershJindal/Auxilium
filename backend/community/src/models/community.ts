@@ -12,6 +12,11 @@ const Community = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    imageURI: String,
+    description: {
+      type: String,
+      required: true,
+    },
     isClosed: {
       type: Boolean,
       default: false,
