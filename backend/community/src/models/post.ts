@@ -26,6 +26,10 @@ const Post = new mongoose.Schema(
       required: true,
       index: true,
     },
+    announcementId: {
+      type: mongoose.Types.ObjectId,
+      index: true,
+    },
     likes: {
       type: Number,
       default: 0,

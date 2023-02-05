@@ -21,14 +21,33 @@ export class PostController {
 
     try {
       const userId = req.currentUser.userId;
-      const type = req.body.type as IPostInputDTO['type'];
       const data = req.body.data as IPostInputDTO['data'];
       const communityId = req.params.communityId as unknown as IPostInputDTO['communityId'];
 
-      const post = await this.postServiceInstance.createPost({ userId, communityId, data, type });
+      const post = await this.postServiceInstance.createPost({ userId, communityId, data });
       return res.status(200).json(Result.success(post));
     } catch (error) {
       return next(error);
+    }
+  };
+
+  public adminCreatesPostForAnnouncement = async (req: IRequest, res: IResponse, next: INextFunction) => {
+    try {
+      const adminId = req.currentUser.userId;
+      const data = req.body.data as IPostInputDTO['data'];
+      const communityId = req.params.communityId as unknown as IPostInputDTO['communityId'];
+      const announcementId = req.body.announcementId as IPostInputDTO['announcementId'];
+
+      const post = await this.postServiceInstance.adminCreatesPostForAnnouncement({
+        communityId,
+        data,
+        announcementId,
+        userId: adminId,
+      });
+
+      return res.status(200).json(Result.success(post));
+    } catch (e) {
+      return next(e);
     }
   };
 

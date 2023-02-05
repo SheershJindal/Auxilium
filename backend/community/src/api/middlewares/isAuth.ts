@@ -32,12 +32,14 @@ export const checkToken = (token: string, isAuth = true): IToken => {
   }
 };
 
-const isAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
+const baseAuth = async (req: IRequest, res: IResponse, next: INextFunction, type: IToken['role']) => {
   const logger: Logger = Container.get('logger');
 
   try {
     const tokenFromHeader = getTokenFromHeader(req);
     const token = checkToken(tokenFromHeader);
+    if (!(token.role == 'admin' || token.role == type))
+      return next('This is an authenticated resource, you must be logged in to access it.');
     logger.debug('User authenticated %o', token);
 
     req.currentUser = token;
@@ -47,21 +49,16 @@ const isAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
   }
 };
 
+const isAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
+  return baseAuth(req, res, next, 'user');
+};
+
 export const isOfficerAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
-  const logger: Logger = Container.get('logger');
+  return baseAuth(req, res, next, 'officer');
+};
 
-  try {
-    const tokenFromHeader = getTokenFromHeader(req);
-    const token = checkToken(tokenFromHeader);
-    if (!(token.role == 'officer' || token.role == 'admin'))
-      return next('This is an authenticated resource, you must be logged in to access it.');
-    logger.debug('User authenticated %o', token);
-
-    req.currentUser = token;
-    return next();
-  } catch (e) {
-    return next(e);
-  }
+export const isAdminAuth = async (req: IRequest, res: IResponse, next: INextFunction) => {
+  return baseAuth(req, res, next, 'admin');
 };
 
 export default isAuth;

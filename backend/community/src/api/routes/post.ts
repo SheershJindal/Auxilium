@@ -12,6 +12,8 @@ export default (app: Router) => {
 
   route.post('/:communityId', middlewares.isAuth, ctrl.createPost);
 
+  route.post('/announcement/:communityId', middlewares.isAdminAuth, ctrl.adminCreatesPostForAnnouncement);
+
   route.delete('/:postId', middlewares.isAuth, ctrl.deletePost);
 
   route.get('/:postId', middlewares.isAuth, ctrl.getPost);

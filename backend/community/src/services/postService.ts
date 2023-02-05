@@ -1,5 +1,5 @@
 import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
-import { IPost, IPostInputDTO } from '@/interfaces/IPost';
+import { IPost, IPostInputDTO, IPostMinInputDTO } from '@/interfaces/IPost';
 import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
 import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
@@ -23,7 +23,7 @@ export class PostService {
     this.userCommunityRepositoryInstance = userCommunityRepository;
   }
 
-  public createPost = async (postInputDTO: IPostInputDTO) => {
+  public createPost = async (postInputDTO: IPostMinInputDTO) => {
     try {
       this.logger.silly('Creating post record');
 
@@ -35,13 +35,29 @@ export class PostService {
 
       const postRecord = await this.postRepositoryInstance.createPost({
         ...postInputDTO,
-        type: postInputDTO['type'] || 'General',
+        type: 'General',
       });
       if (!postRecord) throw 'Post cannot be created';
       const post = { ...postRecord };
       Reflect.deleteProperty(post, 'createdAt');
       Reflect.deleteProperty(post, 'updatedAt');
 
+      return post;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  public adminCreatesPostForAnnouncement = async (postInputDTO: IPostMinInputDTO) => {
+    try {
+      this.logger.silly('Creating post record');
+
+      const postRecord = await this.postRepositoryInstance.createPost({ ...postInputDTO, type: 'Announcement' });
+      if (!postRecord) throw 'Post cannot be created';
+      const post = { ...postRecord };
+      delete post.createdAt;
+      delete post.updatedAt;
+      
       return post;
     } catch (e) {
       throw e;

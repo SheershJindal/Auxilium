@@ -1,4 +1,4 @@
-import isAuth, { isOfficerAuth } from './isAuth';
+import isAuth, { isOfficerAuth, isAdminAuth } from './isAuth';
 import rateLimit from './rateLimit';
 import upload from './upload';
 
@@ -7,4 +7,5 @@ export default {
   rateLimit,
   upload,
   isOfficerAuth,
+  isAdminAuth,
 };
