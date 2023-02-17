@@ -12,6 +12,8 @@ export default (app: Router) => {
   app.use('/community', route);
 
   route.get('/', middlewares.isOfficerAuth, ctrl.getAllCommunities);
+  
+  route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 
   route.get('/:communityId', middlewares.isAuth, ctrl.getCommunityPaginated);
 
@@ -20,6 +22,4 @@ export default (app: Router) => {
   route.post('/:communityId/subscribe', middlewares.isAuth, ctrl.subscribeToCommunity);
 
   route.delete('/:communityId/leave', middlewares.isAuth, ctrl.leaveCommunity);
-
-  route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 };
