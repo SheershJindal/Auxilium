@@ -57,7 +57,7 @@ export class PostService {
       const post = { ...postRecord };
       delete post.createdAt;
       delete post.updatedAt;
-      
+
       return post;
     } catch (e) {
       throw e;
@@ -81,7 +81,7 @@ export class PostService {
         const newRecord = await this.postRepositoryInstance.softDeletePost(postId);
         return { id: newRecord.insertedId };
       }
-      throw 'You are not authorized to delete this comment.';
+      throw 'You are not authorized to delete this post.';
     } catch (error) {
       throw error;
     }
@@ -129,7 +129,7 @@ export class PostService {
 
   public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
     try {
-      this.logger.silly('Updating comment record');
+      this.logger.silly('Updating post record');
 
       const postRecord = await this.postRepositoryInstance.likeUnlikePost(userId, postId);
       let post = { ...postRecord };
@@ -162,7 +162,7 @@ export class PostService {
 
   public dislikeUndislikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
     try {
-      this.logger.silly('Updating comment record');
+      this.logger.silly('Updating post record');
 
       const postRecord = await this.postRepositoryInstance.dislikeUndislikePost(userId, postId);
 
@@ -358,6 +358,4 @@ export class PostService {
     const arr = recursiveBuild(rootLevelIDs);
     return arr;
   };
-
-  private recursiveBuild = () => {};
 }
