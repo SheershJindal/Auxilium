@@ -12,12 +12,12 @@ export default (app: Router) => {
   app.use('/community', route);
 
   route.get('/', middlewares.isOfficerAuth, ctrl.getAllCommunities);
-  
+
   route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 
   route.get('/:communityId', middlewares.isAuth, ctrl.getCommunityPaginated);
 
-  route.post('/create', ctrl.createCommunity);
+  route.post('/create', middlewares.isAdminAuth, ctrl.createCommunity);
 
   route.post('/:communityId/subscribe', middlewares.isAuth, ctrl.subscribeToCommunity);
 
