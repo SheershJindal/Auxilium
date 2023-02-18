@@ -1,4 +1,5 @@
 import { IToken } from '@/interfaces/IToken';
+import { unlink } from 'fs/promises';
 import { resolve } from 'path';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
@@ -21,7 +22,7 @@ export class UploadService {
     const photosPromises = [];
     const videosPromises = [];
 
-    if (files['photos']) {
+    if (files && files['photos']) {
       const photos = files['photos'];
       photos.map(photo => {
         const fileName = photo.filename;
@@ -32,7 +33,7 @@ export class UploadService {
       });
     }
 
-    if (files['videos']) {
+    if (files && files['videos']) {
       const videos = files['videos'];
       videos.map(video => {
         const fileName = video.filename;
@@ -44,6 +45,24 @@ export class UploadService {
     }
     const photos = (await Promise.all(photosPromises)).map(promise => promise.url);
     const videos = (await Promise.all(videosPromises)).map(promise => promise.url);
+
+    /**
+     * Unlinking files
+     */
+    if (files && files['photos']) {
+      let ph = files['photos'];
+      ph.map(p => {
+        const path = resolve(p.path);
+        unlink(path);
+      });
+    }
+    if (files && files['videos']) {
+      let vi = files['videos'];
+      vi.map(v => {
+        const path = resolve(v.path);
+        unlink(path);
+      });
+    }
 
     return { photos, videos };
   };
