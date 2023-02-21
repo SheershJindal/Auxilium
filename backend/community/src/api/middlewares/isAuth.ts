@@ -38,14 +38,24 @@ const baseAuth = async (req: IRequest, res: IResponse, next: INextFunction, type
   try {
     const tokenFromHeader = getTokenFromHeader(req);
     const token = checkToken(tokenFromHeader);
-    if (!(token.role == 'admin' || token.role == type))
-      return next('This is an authenticated resource, you must be logged in to access it.');
+    if (!(token.role == 'admin' || token.role == type)) return next(getErrorMessage(type));
     logger.debug('User authenticated %o', token);
 
     req.currentUser = token;
     return next();
   } catch (e) {
     return next(e);
+  }
+};
+
+const getErrorMessage = (authType: IToken['role']) => {
+  switch (authType) {
+    case 'officer':
+      return 'This is an authenticated resource, you must be logged in as an officer to access it.';
+    case 'admin':
+      return 'This is an authenticated resource, you must be logged in as an admin to access it.';
+    default:
+      return 'This is an authenticated resource, you must be logged in to access it.';
   }
 };
 
