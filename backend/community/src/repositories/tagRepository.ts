@@ -28,16 +28,16 @@ export class TagRepository {
   };
 
   public addTagInCache = async ({ _id, tag }: { _id: ITag['_id']; tag: ITag['tag'] }) => {
-    const prev = JSON.parse(await this.cacheInstance.get(enums.Constants.CACHE_TAGS)) || [];
-    const current = { _id, tag };
-    const updated = JSON.stringify([...prev, current]);
-    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, updated);
-    return updated;
+    const result = await this.cacheInstance.hset(enums.Constants.CACHE_TAGS, _id.toString(), tag);
+    return result == 1;
   };
 
   public populateTagsInCache = async (tags: { _id: ITag['_id']; tag: ITag['tag'] }[]) => {
-    const value = JSON.stringify(tags);
-    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, value);
+    const obj = {};
+    for (const record of tags) {
+      obj[record._id.toString()] = record.tag;
+    }
+    await this.cacheInstance.hmset(enums.Constants.CACHE_TAGS, obj);
     return tags;
   };
 
@@ -48,8 +48,16 @@ export class TagRepository {
   };
 
   public getTagsFromCache = async () => {
-    const cache = await this.cacheInstance.get(enums.Constants.CACHE_TAGS);
-    return cache;
+    const cache = await this.cacheInstance.hgetall(enums.Constants.CACHE_TAGS);
+    const arr = [];
+    for (const record in cache) {
+      const obj = {};
+      obj['_id'] = record;
+      obj['tag'] = cache[record];
+      arr.push(obj);
+    }
+
+    return arr;
   };
 
   public reinitializeCache = async () => {
@@ -59,7 +67,12 @@ export class TagRepository {
      */
     const records = await TagModel.find().lean();
     const results = this.resultify(records);
-    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, JSON.stringify(results));
+    const obj = {};
+    for (const record of results) {
+      obj[record._id.toString()] = record.tag;
+    }
+    const status = await this.cacheInstance.hmset(enums.Constants.CACHE_TAGS, obj);
+    return status;
   };
 
   private resultify = (records: ITag[]) => {

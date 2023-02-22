@@ -23,11 +23,11 @@ export class TagService {
     const cache = await this.tagRepositoryInstance.getTagsFromCache();
     if (cache && cache.length > 0) {
       /**@todo remove later */
-      this.logger.debug('Serving supersonic from cache 🔥🔥');
-      return JSON.parse(cache);
+      this.logger.debug('Serving tags supersonic from cache 🔥🔥');
+      return cache;
     }
     /**@todo remove later */
-    this.logger.debug('Serving slowly from db 😢😢');
+    this.logger.debug('Serving tags slowly from db 😢😢');
     const records = await this.tagRepositoryInstance.getTagsFromDB();
     this.logger.debug('Caching the tags 🚀');
     this.tagRepositoryInstance.populateTagsInCache(records);
