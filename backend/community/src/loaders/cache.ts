@@ -1,14 +1,8 @@
 import config from '@/config';
-import { createClient } from 'redis';
 import Logger from './logger';
+import Redis from 'ioredis';
 
-const client = createClient({
-  socket: {
-    host: config.cache.host,
-    port: config.cache.port,
-  },
-});
+const redis = new Redis({ host: config.cache.host, port: config.cache.port });
+redis.on('error', err => Logger.error('🔥 Error connecting to redis %o', err));
 
-client.on('error', err => Logger.error('🔥 Error connecting to redis %o', err));
-
-export default client;
+export default redis;

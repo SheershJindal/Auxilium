@@ -1,16 +1,18 @@
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import TagModel from '@/models/tag';
-import cacheStore from '@/loaders/cache';
 import * as enums from '@/constants/enums';
 import { ITag } from '@/interfaces/ITag';
 import { Logger } from 'winston';
+import { Redis } from 'ioredis';
 
 @Service()
 export class TagRepository {
   protected logger: Logger;
+  protected cacheInstance: Redis;
 
   constructor(@Inject('logger') logger: Logger) {
     this.logger = logger;
+    this.cacheInstance = Container.get('cache');
   }
 
   /**
@@ -26,16 +28,16 @@ export class TagRepository {
   };
 
   public addTagInCache = async ({ _id, tag }: { _id: ITag['_id']; tag: ITag['tag'] }) => {
-    const prev = JSON.parse(await cacheStore.get(enums.Constants.CACHE_TAGS)) || [];
+    const prev = JSON.parse(await this.cacheInstance.get(enums.Constants.CACHE_TAGS)) || [];
     const current = { _id, tag };
     const updated = JSON.stringify([...prev, current]);
-    await cacheStore.set(enums.Constants.CACHE_TAGS, updated);
+    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, updated);
     return updated;
   };
 
   public populateTagsInCache = async (tags: { _id: ITag['_id']; tag: ITag['tag'] }[]) => {
     const value = JSON.stringify(tags);
-    await cacheStore.set(enums.Constants.CACHE_TAGS, value);
+    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, value);
     return tags;
   };
 
@@ -46,7 +48,7 @@ export class TagRepository {
   };
 
   public getTagsFromCache = async () => {
-    const cache = await cacheStore.get(enums.Constants.CACHE_TAGS);
+    const cache = await this.cacheInstance.get(enums.Constants.CACHE_TAGS);
     return cache;
   };
 
@@ -57,7 +59,7 @@ export class TagRepository {
      */
     const records = await TagModel.find().lean();
     const results = this.resultify(records);
-    await cacheStore.set(enums.Constants.CACHE_TAGS, JSON.stringify(results));
+    await this.cacheInstance.set(enums.Constants.CACHE_TAGS, JSON.stringify(results));
   };
 
   private resultify = (records: ITag[]) => {
