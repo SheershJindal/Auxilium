@@ -1,8 +1,10 @@
 """Module contains database operations related to announcement API."""
 
+from placy.config import Config
 from placy.models import Announcement
 from http import HTTPStatus
 from collections import namedtuple
+from mongoengine import connect
 
 
 DatabaseResponse = namedtuple("DatabaseResponse", ["status", "errmsg", "data"])
@@ -11,13 +13,14 @@ DatabaseResponse = namedtuple("DatabaseResponse", ["status", "errmsg", "data"])
 class AnnouncementRepo:
     """Repository for announcements."""
 
-    def __init__(self):
+    def __init__(self, config: Config):
         """Initialize the announcement repository."""
-        pass
+        self.config = config
 
     def setup(self):
         """Configure the announcement repository."""
-        pass
+        connection_url = self.config.mongo_uri + "/placy"
+        connect(db="placy")
 
     def add_announcement(self, announcement: Announcement) -> DatabaseResponse:
         """Add the announcement to the database."""

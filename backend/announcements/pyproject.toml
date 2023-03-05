@@ -12,6 +12,7 @@ fastapi = "^0.88.0"
 mongoengine = "^0.25.0"
 pdoc = "^12.3.0"
 uvicorn = "^0.20.0"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
