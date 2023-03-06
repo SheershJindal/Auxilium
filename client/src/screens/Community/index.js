@@ -1,7 +1,7 @@
-import { Image, Text, View, StyleSheet } from "react-native";
+import { Image, Text, View, StyleSheet, Button } from "react-native";
 import colors from "../../theme/colors";
 
-const Community = () => {
+const Community = ({ navigation }) => {
 
     const numberWithCommas = (x) => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -20,6 +20,7 @@ const Community = () => {
             </View>
             <Text style={styles.description}>Proident sunt velit eiusmod aute pariatur officia ad amet consectetur. Ea ad aliquip pariatur anim officia adipisicing. Occaecat occaecat tempor eiusmod aliqua ea cupidatat dolore. Nisi sint consectetur consequat sint enim enim. Esse laboris incididunt consectetur tempor amet dolore. Pariatur quis excepteur officia reprehenderit labore ut irure id. Ut ad Lorem dolore id cillum laboris proident.</Text>
             <Text style={styles.membersWrapper}><Text style={styles.members}>{numberWithCommas(1000)}</Text> Members</Text>
+            {/* <Button title="Create Post" onPress={navigation.navigate('CreatePost', { isHome: false, communityName: "CommunityTitle" })} /> */}
         </View>
     )
 }
