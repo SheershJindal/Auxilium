@@ -1,6 +1,7 @@
 """Module to run backend."""
 
-from dotenv import dotenv_values
+from dotenv import load_dotenv
+import os
 from fastapi import FastAPI
 from placy.controllers.auth import AuthController
 from placy.services.config import Config
@@ -13,10 +14,11 @@ from placy.placy import Placy
 
 if __name__ == "__main__":
     app = FastAPI()
-    env = dotenv_values()
+    # env = dotenv_values()
+    load_dotenv()
     config = Config(
-        mongo_uri=env["MONGO_URI"] if "MONGO_URI" in env else "",
-        sendgrid_api_key=env["SENDGRID_API_KEY"] if "SENDGRID_API_KEY" in env else "",
+        mongo_uri=os.getenv("MONGO_URI", ""),
+        sendgrid_api_key=os.getenv("SENDGRID_API_KEY", ""),
     )
     logger = DefaultLogger(config)
     auth_repo = AuthRepository(logger, config)

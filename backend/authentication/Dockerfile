@@ -1,14 +1,12 @@
-FROM ubuntu:latest
+FROM python:3.10-slim-buster
 
 MAINTAINER pspiagicw
 
-RUN apt update && apt install -y python3-pip && apt install -y git
+RUN apt update && apt install -y git
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY . /app
-
-WORKDIR /app/backend
+COPY . /usr/src/app
 
 RUN pip install poetry poethepoet && poe init-simple
 
