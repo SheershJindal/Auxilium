@@ -38,3 +38,16 @@ class AnnouncementController:
             )
 
         return ErrorResponse(status=200, success=False, errmsg="")
+
+    def list(self) -> list[Announcement] | ErrorResponse:
+        """List all announcements."""
+        db_response = self.repo.get_announcements()
+
+        # if db_response.status != HTTPStatus.OK:
+        #     return ErrorResponse(
+        #         status=db_response.status,
+        #         success=False,
+        #         errmsg=db_response.errmsg,
+        #     )
+
+        return db_response

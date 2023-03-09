@@ -22,3 +22,10 @@ def setupAnnouncementRoutes(app: FastAPI, controller: AnnouncementController) ->
         response = controller.create(announcement)
         temp.status_code = response.status
         return response
+
+    @app.get("/announcement/list")
+    def list(temp: Response):
+        """Handle announcement listing."""
+        response = controller.list()
+        temp.status_code = response.status
+        return response

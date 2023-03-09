@@ -22,6 +22,10 @@ class AnnouncementRepo:
         connection_url = self.config.mongo_uri + "/placy"
         connect(db="placy")
 
+    def get_announcements(self):
+        """List all announcements."""
+        return DatabaseResponse(status=200, errmsg="", data=Announcement.objects)
+
     def add_announcement(self, announcement: Announcement) -> DatabaseResponse:
         """Add the announcement to the database."""
         response = None
