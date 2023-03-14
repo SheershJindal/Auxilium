@@ -1,13 +1,24 @@
-FROM python:3.10-slim-buster
+FROM python:3-slim as python
+ENV PYTHONUNBUFFERED=true
+WORKDIR /app
 
-MAINTAINER pspiagicw
 
-RUN apt update && apt install -y git
+FROM python as poetry
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VIRTUALENVS_IN_PROJECT=true
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
-WORKDIR /usr/src/app
+COPY . ./
 
-COPY . /usr/src/app
+RUN pip install poetry
 
-RUN pip install poetry poethepoet && poe init-simple
 
-CMD ["poe","run"]
+RUN poetry install --no-interaction --no-ansi -vvv
+
+FROM python as runtime
+ENV PATH="/app/.venv/bin:$PATH"
+COPY --from=poetry /app /app
+
+EXPOSE 5000
+
+CMD ["python", "-m", "placy"]
