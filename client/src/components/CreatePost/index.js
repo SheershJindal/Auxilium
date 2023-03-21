@@ -80,13 +80,14 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                 <Text style={sharedStyles.titleText}>Upload</Text>
                 <View style={styles.uploadContainer}>
                     {Platform.OS !== 'web' && <TouchableOpacity style={styles.button} onPress={handleCameraUpload}>
-                        <Text style={sharedStyles.buttonText}>From Camera</Text>
+                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16 }}>From Camera</Text>
                     </TouchableOpacity>}
                     <TouchableOpacity style={styles.button} onPress={handleGalleryUpload}>
-                        <Text style={sharedStyles.buttonText}>From Gallery</Text>
+                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16 }}>From Gallery</Text>
                     </TouchableOpacity>
                 </View>
                 {isHome && <Text style={sharedStyles.titleText}>Select Community</Text>}
+
                 {isHome && <DropDownPicker
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
@@ -151,27 +152,25 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         flex: 1,
-        marginVertical: 40
+        marginVertical: 40,
     },
     uploadContainer: {
         display: 'flex',
-        alignItems: 'center',
-        // flex: 0.5,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-evenly'
     },
     button: {
         backgroundColor: colors.primary,
         height: 40,
-        width: '100%',
-        alignSelf: 'center',
         borderRadius: 50,
-        alignItems: "center",
         justifyContent: "center",
         marginBottom: 20,
-        marginTop: 20
+        marginTop: 20,
+        paddingHorizontal: 10
     },
     inputArea: {
-        height: Platform.OS == "web" ? '50%' : '30%',
+        // minHeight: Platform.OS == "web" ? '20%':'5%',
         borderWidth: 1,
         borderStyle: "solid",
         borderRadius: 12.5,

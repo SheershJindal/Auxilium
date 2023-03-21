@@ -46,8 +46,8 @@ const LeftSidebar = ({ navigation }) => {
                 </Scrollbars>
             </View>
             <View style={{ bottom: 0, justifyContent: 'flex-end', }}>
-                <HoverableOpacity activeOpacity={0.7} hoverStyle={{ backgroundColor: colors.primary, borderRadius: 10 }} outerStyle={{ marginBottom: 20 }} onPress={() => navigation.navigate('CreatePost')} style={{ flexDirection: 'row', alignItems: 'center', height: 50, marginLeft: 20 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <HoverableOpacity activeOpacity={0.7} hoverStyle={{ backgroundColor: colors.primary, borderRadius: 10, }} outerStyle={{ marginBottom: 20, }} onPress={() => navigation.navigate('CreatePost')} style={{ justifyContent: 'center', marginBottom: 20, height: '100%', }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Ionicons name="create-outline" size={30} color="black" style={{ marginRight: 20 }} />
                         <Text style={{ fontWeight: '600', fontSize: 16, textTransform: 'uppercase' }}>Create</Text>
                     </View>

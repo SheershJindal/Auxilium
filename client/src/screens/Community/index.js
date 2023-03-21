@@ -20,7 +20,7 @@ const Community = ({ navigation }) => {
             </View>
             <Text style={styles.description}>Proident sunt velit eiusmod aute pariatur officia ad amet consectetur. Ea ad aliquip pariatur anim officia adipisicing. Occaecat occaecat tempor eiusmod aliqua ea cupidatat dolore. Nisi sint consectetur consequat sint enim enim. Esse laboris incididunt consectetur tempor amet dolore. Pariatur quis excepteur officia reprehenderit labore ut irure id. Ut ad Lorem dolore id cillum laboris proident.</Text>
             <Text style={styles.membersWrapper}><Text style={styles.members}>{numberWithCommas(1000)}</Text> Members</Text>
-            {/* <Button title="Create Post" onPress={navigation.navigate('CreatePost', { isHome: false, communityName: "CommunityTitle" })} /> */}
+            <Button title="Create Post" onPress={() => navigation.navigate('CreatePost', { isHome: false, communityName: "CommunityTitle" })} />
         </View>
     )
 }
