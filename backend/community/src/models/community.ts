@@ -7,6 +7,7 @@ const Community = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      unique: true,
     },
     totalMembers: {
       type: Number,
@@ -21,7 +22,7 @@ const Community = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    moderators: [{ type: mongoose.Schema.Types.ObjectId }],
+    moderators: [mongoose.Schema.Types.ObjectId],
   },
   { timestamps: true },
 );

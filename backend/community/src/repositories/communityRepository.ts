@@ -35,7 +35,8 @@ export class CommunityRepository {
 
       const community = await CommunityModel.create({
         name: communityInputDTO.name,
-        moderators: [communityInputDTO.moderatorId],
+        moderators: [new Types.ObjectId(communityInputDTO.moderatorId)],
+        description: communityInputDTO.description,
       });
       if (community) return community.toObject();
       return null;
