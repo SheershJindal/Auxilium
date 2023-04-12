@@ -72,7 +72,7 @@ export class PostRepository {
         },
         {
           $lookup: {
-            from: 'user',
+            from: 'users',
             localField: 'userId',
             foreignField: '_id',
             as: 'user',
@@ -132,7 +132,7 @@ export class PostRepository {
         { $limit: limit },
         {
           $lookup: {
-            from: 'user',
+            from: 'users',
             localField: 'userId',
             foreignField: '_id',
             as: 'user',

@@ -1,20 +1,13 @@
 import { ICommunity, ICommunityInputDTO } from '@/interfaces/ICommunity';
 import mongoose from '@/loaders/mongoose';
 import CommunityModel from '@/models/community';
+import UserModel from '@/models/user';
 import { Service } from 'typedi';
-import { Db } from 'mongodb';
 import { Types } from 'mongoose';
 
 @Service()
 export class CommunityRepository {
-  protected db: Promise<Db>;
-  constructor() {
-    this.db = new Promise((resolve, reject) => {
-      mongoose()
-        .then(response => resolve(response))
-        .catch(err => reject(err));
-    });
-  }
+  constructor() {}
 
   public getCommunity = async (communityId: ICommunity['_id']) => {
     try {
@@ -36,8 +29,8 @@ export class CommunityRepository {
 
   public createCommunity = async (communityInputDTO: ICommunityInputDTO) => {
     try {
-      const db = await this.db;
-      const moderator = await db.collection('user').findOne({ _id: new Types.ObjectId(communityInputDTO.moderatorId) });
+      const moderator = await UserModel.findOne({ _id: new Types.ObjectId(communityInputDTO.moderatorId) });
+
       if (!moderator) throw 'The moderator does not exists';
 
       const community = await CommunityModel.create({
