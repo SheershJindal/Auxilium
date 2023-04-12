@@ -3,7 +3,7 @@ export interface IUser {
   _id: Types.ObjectId;
   email: string;
   username: string;
-  role: 'user';
+  role: 'user' | 'admin' | 'officer';
   password: string;
   salt: string;
   isBanned: boolean;
