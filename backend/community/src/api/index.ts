@@ -4,6 +4,7 @@ import post from './routes/post';
 import tag from './routes/tag';
 import upload from './routes/upload';
 import auth from './routes/auth';
+import announcement from './routes/announcement';
 
 // guaranteed to get dependencies
 export default () => {
@@ -13,5 +14,6 @@ export default () => {
   upload(app);
   tag(app);
   auth(app);
+  announcement(app);
   return app;
 };
