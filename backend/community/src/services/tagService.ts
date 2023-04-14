@@ -8,29 +8,22 @@ export class TagService {
   protected tagRepositoryInstance: TagRepository;
   protected logger: Logger;
 
-  constructor(tagRepository: TagRepository, @Inject('logger') logger) {
+  constructor(tagRepository: TagRepository, @Inject('logger') logger: Logger) {
     this.tagRepositoryInstance = tagRepository;
     this.logger = logger;
   }
 
-  public createTag = async (tag: ITag['tag']) => {
+  public createTag = async (tag: ITag['tag']): Promise<ITag['tag']> => {
+    const existing = this.tagRepositoryInstance.checkExistingTagInCache(tag);
+    if (existing) return tag;
+
     const tagRecord = await this.tagRepositoryInstance.createTag(tag);
-    await this.tagRepositoryInstance.addTagInCache({ _id: tagRecord._id, tag: tagRecord.tag });
-    return { _id: tagRecord._id, tag: tagRecord.tag };
+    this.tagRepositoryInstance.addTagInCache({ _id: tagRecord._id, tag: tagRecord.tag });
+    return tagRecord.tag;
   };
 
   public getAllTags = async () => {
-    const cache = await this.tagRepositoryInstance.getTagsFromCache();
-    if (cache && cache.length > 0) {
-      /**@todo remove later */
-      this.logger.debug('Serving tags supersonic from cache 🔥🔥');
-      return cache;
-    }
-    /**@todo remove later */
-    this.logger.debug('Serving tags slowly from db 😢😢');
-    const records = await this.tagRepositoryInstance.getTagsFromDB();
-    this.logger.debug('Caching the tags 🚀');
-    this.tagRepositoryInstance.populateTagsInCache(records);
-    return records;
+    const cache = this.tagRepositoryInstance.getTagsFromCache();
+    return cache;
   };
 }

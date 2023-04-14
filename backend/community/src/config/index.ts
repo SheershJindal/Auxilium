@@ -47,9 +47,4 @@ export default {
   storage: {
     azure_connection_string: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING,
   },
-
-  cache: {
-    host: process.env.REDIS_HOST,
-    port: +process.env.REDIS_PORT,
-  },
 };
