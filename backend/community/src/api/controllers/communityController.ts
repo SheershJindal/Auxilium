@@ -22,8 +22,9 @@ export class CommunityController {
     try {
       const name = req.body.name as ICommunityInputDTO['name'];
       const moderatorId = req.body.moderator as ICommunityInputDTO['moderatorId'];
+      const description = req.body.description as ICommunityInputDTO['description'];
 
-      const community = await this.communityServiceInstance.createCommunity({ moderatorId, name });
+      const community = await this.communityServiceInstance.createCommunity({ moderatorId, name, description });
       return res.status(200).json(Result.success(community));
     } catch (error) {
       return next(error);

@@ -3,6 +3,8 @@ import community from './routes/community';
 import post from './routes/post';
 import tag from './routes/tag';
 import upload from './routes/upload';
+import auth from './routes/auth';
+import announcement from './routes/announcement';
 
 // guaranteed to get dependencies
 export default () => {
@@ -11,5 +13,7 @@ export default () => {
   post(app);
   upload(app);
   tag(app);
+  auth(app);
+  announcement(app);
   return app;
 };

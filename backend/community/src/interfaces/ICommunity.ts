@@ -15,4 +15,5 @@ export interface ICommunity {
 export interface ICommunityInputDTO {
   name: ICommunity['name'];
   moderatorId: ICommunity['moderators'][0];
+  description: ICommunity['description'];
 }
