@@ -25,8 +25,11 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
         setCommunityItems(community)
     }
     const getTags = async () => {
-        const tag = await tagService.getTags()
-        setTagItems(tag)
+        let tags = await tagService.getTags()
+        tags = tags.map(tag => {
+            return { label: tag, value: tag }
+        })
+        setTagItems(tags)
     }
     useEffect(() => {
         getCommunities()
@@ -105,12 +108,6 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     zIndex={3000}
                     zIndexInverse={1000}
                 />}
-                {/* <TextInput
-                    style={sharedStyles.input}
-                    placeholder="Select Community"
-                    // value={community}
-                    // onChangeText={t => setCommunityText(t)}
-                /> */}
                 <Text style={sharedStyles.titleText}>Select Tags</Text>
                 <DropDownPicker
                     placeholder='Select Tags'
@@ -123,7 +120,6 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     onOpen={onTagOpen}
                     setOpen={setTagOpen}
                     setItems={setTagItems}
-                    schema={{ label: 'tag', value: '_id' }}
                     setValue={setTagValue}
                     closeOnBackPressed
                     zIndex={1000}
@@ -170,7 +166,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     inputArea: {
-        // minHeight: Platform.OS == "web" ? '20%':'5%',
         borderWidth: 1,
         borderStyle: "solid",
         borderRadius: 12.5,
