@@ -1,8 +1,16 @@
-import config from '@/config';
-import Logger from './logger';
-import Redis from 'ioredis';
+import { TagRepository } from '@/repositories/tagRepository';
+import NodeCache from 'node-cache';
+import Container from 'typedi';
 
-const redis = new Redis({ host: config.cache.host, port: config.cache.port });
-redis.on('error', err => Logger.error('🔥 Error connecting to redis %o', err));
+export let tagsCache: NodeCache;
+export let rateLimitCache: NodeCache
 
-export default redis;
+export const initializeCache = () => {
+  tagsCache = new NodeCache();
+  rateLimitCache = new NodeCache();
+};
+
+export const reinitializeTagsCache = async () => {
+  const tagRepo: TagRepository = Container.get(TagRepository);
+  await tagRepo.reinitializeCache();
+};
