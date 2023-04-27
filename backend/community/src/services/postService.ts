@@ -1,8 +1,12 @@
+import config from '@/config';
 import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
+import { KafkaSearchTopic } from '@/interfaces/IKafka';
 import { IPost, IPostInputDTO, IPostMinInputDTO } from '@/interfaces/IPost';
+import { producer } from '@/loaders/kafka';
 import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
 import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
+import { Producer } from 'kafkajs';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 
@@ -11,6 +15,7 @@ export class PostService {
   protected postRepositoryInstance: PostRepository;
   protected commentRepositoryInstance: CommentRepository;
   protected userCommunityRepositoryInstance: UserCommunityRepository;
+  protected producerInstance: Producer;
 
   constructor(
     postRepository: PostRepository,
@@ -21,9 +26,10 @@ export class PostService {
     this.postRepositoryInstance = postRepository;
     this.commentRepositoryInstance = commentRepository;
     this.userCommunityRepositoryInstance = userCommunityRepository;
+    this.producerInstance = producer;
   }
 
-  public createPost = async (postInputDTO: IPostMinInputDTO) => {
+  public createPost = async (postInputDTO: IPostMinInputDTO): Promise<IPost> => {
     try {
       this.logger.silly('Creating post record');
 
@@ -39,6 +45,9 @@ export class PostService {
       });
       if (!postRecord) throw 'Post cannot be created';
       const post = { ...postRecord };
+
+      await this.pushPostForCreatingIndex(post);
+
       Reflect.deleteProperty(post, 'createdAt');
       Reflect.deleteProperty(post, 'updatedAt');
 
@@ -55,6 +64,9 @@ export class PostService {
       const postRecord = await this.postRepositoryInstance.createPost({ ...postInputDTO, type: 'Announcement' });
       if (!postRecord) throw 'Post cannot be created';
       const post = { ...postRecord };
+
+      await this.pushPostForCreatingIndex(post);
+
       delete post.createdAt;
       delete post.updatedAt;
 
@@ -79,6 +91,7 @@ export class PostService {
         this.logger.silly('Soft deleting post record');
 
         const newRecord = await this.postRepositoryInstance.softDeletePost(postId);
+        await this.pushPostForDeletingIndex(postId);
         return { id: newRecord.insertedId };
       }
       throw 'You are not authorized to delete this post.';
@@ -133,6 +146,7 @@ export class PostService {
 
       const postRecord = await this.postRepositoryInstance.likeUnlikePost(userId, postId);
       let post = { ...postRecord };
+      await this.pushPostForUpdatingIndex(post);
 
       let likedBy = [];
       let dislikedBy = [];
@@ -167,6 +181,7 @@ export class PostService {
       const postRecord = await this.postRepositoryInstance.dislikeUndislikePost(userId, postId);
 
       let post = { ...postRecord };
+      await this.pushPostForUpdatingIndex(post);
 
       let likedBy = [];
       let dislikedBy = [];
@@ -208,6 +223,8 @@ export class PostService {
       if (!commentRecord) throw 'Comment cannot be created';
       const comment = { ...commentRecord };
 
+      await this.pushCommentForCreatingIndex(comment);
+
       Reflect.deleteProperty(comment, 'createdAt');
       Reflect.deleteProperty(comment, 'updatedAt');
 
@@ -228,6 +245,8 @@ export class PostService {
         this.logger.silly('Soft deleting comment record');
 
         const newRecord = await this.commentRepositoryInstance.softDeleteComment(commentId);
+        await this.pushCommentForDeletingIndex(commentId);
+
         return { id: newRecord.insertedId };
       }
       throw 'You are not authorized to delete this comment.';
@@ -242,6 +261,8 @@ export class PostService {
 
       const commentRecord = await this.commentRepositoryInstance.likeUnlikeComment(userId, commentId);
       let comment = { ...commentRecord };
+
+      await this.pushCommentForUpdatingIndex(comment);
 
       let likedBy = [];
       let dislikedBy = [];
@@ -275,6 +296,8 @@ export class PostService {
 
       const commentRecord = await this.commentRepositoryInstance.dislikeUndislikeComment(userId, commentId);
       let comment = { ...commentRecord };
+
+      await this.pushCommentForUpdatingIndex(comment);
 
       let likedBy = [];
       let dislikedBy = [];
@@ -357,5 +380,47 @@ export class PostService {
     });
     const arr = recursiveBuild(rootLevelIDs);
     return arr;
+  };
+
+  private pushPostForCreatingIndex = async (post: IPost) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: JSON.stringify(post), key: KafkaSearchTopic.INDEX_NEW_POST }],
+    });
+  };
+
+  private pushPostForUpdatingIndex = async (post: IPost) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: JSON.stringify(post), key: KafkaSearchTopic.INDEX_UPDATE_POST }],
+    });
+  };
+
+  private pushPostForDeletingIndex = async (postId: IPost['_id']) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: postId.toString(), key: KafkaSearchTopic.INDEX_DELETE_POST }],
+    });
+  };
+
+  private pushCommentForCreatingIndex = async (comment: IComment) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: JSON.stringify(comment), key: KafkaSearchTopic.INDEX_NEW_COMMENT }],
+    });
+  };
+
+  private pushCommentForUpdatingIndex = async (comment: IComment) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: JSON.stringify(comment), key: KafkaSearchTopic.INDEX_UPDATE_COMMENT }],
+    });
+  };
+
+  private pushCommentForDeletingIndex = async (commentId: IComment['_id']) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: commentId.toString(), key: KafkaSearchTopic.INDEX_DELETE_COMMENT }],
+    });
   };
 }

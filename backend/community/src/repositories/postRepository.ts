@@ -148,7 +148,7 @@ export class PostRepository {
     }
   };
 
-  public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']) => {
+  public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']): Promise<IPost> => {
     try {
       const isLiked = await PostModel.findOne({ _id: postId, likedBy: { $in: [new Types.ObjectId(userId)] } })
         .limit(1)
