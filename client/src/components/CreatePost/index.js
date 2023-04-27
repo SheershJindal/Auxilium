@@ -14,8 +14,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
     const postService = usePostService()
 
     const [text, setText] = useState('')
-    const [media, setMedia] = useState('')
-    const [mediaData, setMediaData] = useState({ URI: '', mediaName: '', type: '' })
+    const [mediaData, setMediaData] = useState({ URI: null, type: null })
     const [communityOpen, setCommunityOpen] = useState(false)
     const [communityItems, setCommunityItems] = useState([])
     const [tagItems, setTagItems] = useState([])
@@ -49,23 +48,25 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
     }, [])
 
     const handleMediaUpload = async (res) => {
+        console.log(res)
         if (res.canceled) return;
-        setMedia(res.assets[0].uri)
-        setMediaData({ URI: res.assets[0].uri, mediaName: res.assets[0].fileName, type: res.assets[0].type })
+        let URI = Platform.OS !== "android" ? "file://" + res.assets[0].uri : res.assets[0].uri
+        let type = Platform.OS === "android" ? res.assets[0].type : res.assets[0].uri.split('/')[0]
+        setMediaData({ URI: URI, type: type })
     }
 
     const handleCreate = async () => {
-        const res = await postService.createPost(media)
+        const res = await postService.createPost(text, communityValue, mediaData)
         console.log(res)
     }
 
     const handleCameraUpload = async () => {
-        const res = await ImagePicker.launchCameraAsync({ mediaType: "mixed" })
+        const res = await ImagePicker.launchCameraAsync({ mediaTypes: "All" })
         handleMediaUpload(res)
     }
 
     const handleGalleryUpload = async () => {
-        const res = await ImagePicker.launchImageLibraryAsync({ mediaType: "mixed" })
+        const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: "All" })
         handleMediaUpload(res)
     }
 
@@ -94,7 +95,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                 {isHome && <DropDownPicker
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
-                    multiple={isHome}
+                    // multiple={isHome}
                     mode="BADGE"
                     open={communityOpen}
                     items={communityItems}
