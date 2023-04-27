@@ -3,6 +3,7 @@ import dependencyInjectorLoader from './dependencyInjector';
 import mongooseLoader from './mongoose';
 import Logger from './logger';
 import { initializeCache, reinitializeTagsCache } from './cache';
+import { connect as kafkaLoader } from './kafka';
 
 export default async ({ expressApp }) => {
   const mongoConnection = await mongooseLoader();
@@ -10,6 +11,9 @@ export default async ({ expressApp }) => {
 
   initializeCache();
   Logger.info('✌️ Cache initialized');
+
+  await kafkaLoader();
+  Logger.info('✌️ Kafka producer connected!');
 
   await dependencyInjectorLoader();
   Logger.info('✌️ Dependency Injector loaded');

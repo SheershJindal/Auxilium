@@ -47,4 +47,19 @@ export default {
   storage: {
     azure_connection_string: process.env.AZURE_BLOB_STORAGE_CONNECTION_STRING,
   },
+
+  search: {
+    algolia_application_id: process.env.ALGOLIA_APPLICATION_ID,
+    algolia_admin_api_key: process.env.ALGOLIA_ADMIN_API_KEY,
+    communitiesIndex: 'dev_COMMUNITIES',
+    postsIndex: 'dev_POSTS',
+    commentsIndex: 'dev_COMMENTS',
+  },
+
+  kafka: {
+    clientId: 'dev',
+    brokers: ['localhost:9092'],
+    consumerGroupId: 'development',
+    search_index_topic: "search_index"
+  },
 };
