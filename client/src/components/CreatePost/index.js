@@ -48,10 +48,9 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
     }, [])
 
     const handleMediaUpload = async (res) => {
-        console.log(res)
         if (res.canceled) return;
-        let URI = Platform.OS !== "android" ? "file://" + res.assets[0].uri : res.assets[0].uri
-        let type = Platform.OS === "android" ? res.assets[0].type : res.assets[0].uri.split('/')[0]
+        let URI = res.assets[0].uri
+        let type = res.assets[0].type
         setMediaData({ URI: URI, type: type })
     }
 

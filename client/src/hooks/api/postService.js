@@ -1,5 +1,7 @@
+import { Platform } from "react-native";
 import { useDispatch, useSelector } from "react-redux"
 import { getAuthenticatedAxios } from "./baseConfig";
+import * as mime from 'mime'
 
 const usePostService = () => {
     const dispatch = useDispatch();
@@ -14,14 +16,43 @@ const usePostService = () => {
             let mediaRequest = null;
 
             if (mediaData.URI) {
-                var formData = new FormData();
-                // formData.append('photos', { name: 'Name', uri: mediaData.URI, type: mediaData.type })
-                formData.append('photos', { name: 'image.png', uri: mediaData.URI, type: 'image/png' })
-                mediaRequest = await mediaAxios.post('/media', formData)
-                console.log(formData)
-            }
+                let formData = new FormData();
+                let mimeType;
 
-            console.log(mediaRequest)
+                switch (Platform.OS) {
+                    case "web":
+                        function DataURIToBlob(dataURI) {
+                            const splitDataURI = dataURI.split(',')
+                            const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
+                            const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+
+                            const ia = new Uint8Array(byteString.length)
+                            for (let i = 0; i < byteString.length; i++)
+                                ia[i] = byteString.charCodeAt(i)
+
+                            return new Blob([ia], { type: mimeString })
+                        }
+                        let file = DataURIToBlob(mediaData.URI)
+                        formData.append('photos', file)
+                        break;
+
+                    case "android":
+                        mimeType = mime.getType(mediaData.URI);
+                        formData.append('photos', { name: 'user_uploads', uri: mediaData.URI, type: mimeType })
+                        break;
+
+                    case "ios":
+                        let uri = `file://${mediaData.URI}`;
+                        mimeType = mime.getType(mediaData.URI);
+                        formData.append('photos', { name: 'user_uploads', uri, type: mimeType });
+                        break;
+
+                    default:
+                        formData.append('photos', { name: 'user_uploads', uri: mediaData.URI, type: 'image/png' })
+                }
+
+                mediaRequest = await mediaAxios.post('/media', formData)
+            }
 
             const createPostRequest = await createPostAxios.post('/' + communityId, { data: { content: text, imageURI: mediaRequest.photos[0] } })
             return createPostRequest
