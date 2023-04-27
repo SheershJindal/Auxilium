@@ -68,6 +68,41 @@ export class SearchService {
     });
   };
 
+  public search = async term => {
+    /**
+     * @todo
+     * Add action item on click of an hit. For that also make deep linking on the client side
+     */
+    const { results } = await this.client.multipleQueries([
+      { indexName: config.search.communitiesIndex, query: term },
+      { indexName: config.search.postsIndex, query: term },
+      { indexName: config.search.commentsIndex, query: term, params: { hitsPerPage: 5 } },
+    ]);
+
+    const response = results.map(indexHit => {
+      const { hits, index } = indexHit;
+      const obj = {};
+
+      let indexType;
+      switch (index) {
+        case config.search.communitiesIndex:
+          indexType = 'communities';
+          break;
+        case config.search.postsIndex:
+          indexType = 'posts';
+          break;
+        case config.search.commentsIndex:
+          indexType = 'comments';
+          break;
+      }
+      obj['type'] = indexType;
+      obj['hits'] = hits;
+      return obj;
+    });
+
+    return response;
+  };
+
   private createCommunity = async (community: ICommunity) => {
     const { objectID } = await this.communitiesIndex.saveObject(community, { autoGenerateObjectIDIfNotExist: true });
     this.logger.debug(`Indexed community with communityId ${community._id} and algoliaObjectId ${objectID}`);
