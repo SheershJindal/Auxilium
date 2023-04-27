@@ -7,18 +7,21 @@ import { Consumer } from 'kafkajs';
 import { Logger } from 'winston';
 import { IKafkaSearchTopic, KafkaSearchTopic } from '@/interfaces/IKafka';
 import { IComment } from '@/interfaces/IComment';
+import { ICommunity } from '@/interfaces/ICommunity';
 
 @Service()
 export class SearchService {
   protected client = algoliasearch(config.search.algolia_application_id, config.search.algolia_admin_api_key);
   protected postsIndex: SearchIndex;
   protected commentsIndex: SearchIndex;
+  protected communitiesIndex: SearchIndex;
   protected consumerInstance: Consumer;
   protected logger: Logger;
 
   constructor(@Inject('logger') logger: Logger) {
     this.postsIndex = this.client.initIndex(config.search.postsIndex);
     this.commentsIndex = this.client.initIndex(config.search.commentsIndex);
+    this.communitiesIndex = this.client.initIndex(config.search.communitiesIndex);
     this.consumerInstance = consumer;
     this.logger = logger;
 
@@ -29,10 +32,6 @@ export class SearchService {
    * The searchable attributes are configured from the Algolia's Dashboard
    */
 
-  public indexCommunities = async () => {
-    const communitiesIndex = this.client.initIndex(config.search.communitiesIndex);
-  };
-
   public initializeConsumer = async () => {
     await this.consumerInstance.connect();
     await this.consumerInstance.subscribe({ topic: config.kafka.search_index_topic });
@@ -41,6 +40,9 @@ export class SearchService {
         const key = message.key.toString() as IKafkaSearchTopic;
         this.logger.debug(`Recieved message with key ${key}`);
         switch (key) {
+          case KafkaSearchTopic.INDEX_NEW_COMMUNITY:
+            await this.createCommunity(JSON.parse(message.value.toString()));
+            break;
           case KafkaSearchTopic.INDEX_NEW_POST:
             await this.createPost(JSON.parse(message.value.toString()));
             break;
@@ -64,6 +66,12 @@ export class SearchService {
         }
       },
     });
+  };
+
+  private createCommunity = async (community: ICommunity) => {
+    const { objectID } = await this.communitiesIndex.saveObject(community, { autoGenerateObjectIDIfNotExist: true });
+    this.logger.debug(`Indexed community with communityId ${community._id} and algoliaObjectId ${objectID}`);
+    return objectID;
   };
 
   private createPost = async (post: IPost) => {

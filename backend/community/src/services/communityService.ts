@@ -1,9 +1,13 @@
+import config from '@/config';
 import { ICommunity, ICommunityInputDTO } from '@/interfaces/ICommunity';
+import { KafkaSearchTopic } from '@/interfaces/IKafka';
 import { IToken } from '@/interfaces/IToken';
 import { IUserCommunity } from '@/interfaces/IUserCommunity';
+import { producer } from '@/loaders/kafka';
 import { CommunityRepository } from '@/repositories/communityRepository';
 import { PostRepository } from '@/repositories/postRepository';
 import { UserCommunityRepository } from '@/repositories/userCommunityRepository';
+import { Producer } from 'kafkajs';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 
@@ -12,6 +16,7 @@ export default class CommunityService {
   protected communityRepositoryInstance: CommunityRepository;
   protected userCommunityRepositoryInstance: UserCommunityRepository;
   protected postRepositoryInstance: PostRepository;
+  protected producerInstance: Producer;
 
   constructor(
     communityRepository: CommunityRepository,
@@ -22,6 +27,7 @@ export default class CommunityService {
     this.communityRepositoryInstance = communityRepository;
     this.userCommunityRepositoryInstance = userCommunityRepository;
     this.postRepositoryInstance = postRepository;
+    this.producerInstance = producer;
   }
 
   public createCommunity = async (communityInputDTO: ICommunityInputDTO) => {
@@ -35,6 +41,7 @@ export default class CommunityService {
       }
 
       const community = { ...communityRecord };
+      await this.pushCommunityForCreatingIndex(community);
 
       Reflect.deleteProperty(community, 'createdAt');
       Reflect.deleteProperty(community, 'updatedAt');
@@ -169,5 +176,12 @@ export default class CommunityService {
     } catch (error) {
       throw error;
     }
+  };
+
+  private pushCommunityForCreatingIndex = async (community: ICommunity) => {
+    return await this.producerInstance.send({
+      topic: config.kafka.search_index_topic,
+      messages: [{ value: JSON.stringify(community), key: KafkaSearchTopic.INDEX_NEW_COMMUNITY }],
+    });
   };
 }
