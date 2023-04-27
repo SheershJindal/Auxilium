@@ -104,6 +104,10 @@ export class SearchService {
   };
 
   private createCommunity = async (community: ICommunity) => {
+    community = {...community}
+    community.moderators = undefined;
+    community['__v'] = undefined;
+    
     const { objectID } = await this.communitiesIndex.saveObject(community, { autoGenerateObjectIDIfNotExist: true });
     this.logger.debug(`Indexed community with communityId ${community._id} and algoliaObjectId ${objectID}`);
     return objectID;
