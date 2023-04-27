@@ -14,8 +14,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
     const postService = usePostService()
 
     const [text, setText] = useState('')
-    const [media, setMedia] = useState('')
-    const [mediaData, setMediaData] = useState({ URI: '', mediaName: '', type: '' })
+    const [mediaData, setMediaData] = useState({ URI: null, type: null })
     const [communityOpen, setCommunityOpen] = useState(false)
     const [communityItems, setCommunityItems] = useState([])
     const [tagItems, setTagItems] = useState([])
@@ -25,8 +24,11 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
         setCommunityItems(community)
     }
     const getTags = async () => {
-        const tag = await tagService.getTags()
-        setTagItems(tag)
+        let tags = await tagService.getTags()
+        tags = tags.map(tag => {
+            return { label: tag, value: tag }
+        })
+        setTagItems(tags)
     }
     useEffect(() => {
         getCommunities()
@@ -47,22 +49,23 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
 
     const handleMediaUpload = async (res) => {
         if (res.canceled) return;
-        setMedia(res.assets[0].uri)
-        setMediaData({ URI: res.assets[0].uri, mediaName: res.assets[0].fileName, type: res.assets[0].type })
+        let URI = res.assets[0].uri
+        let type = res.assets[0].type
+        setMediaData({ URI: URI, type: type })
     }
 
     const handleCreate = async () => {
-        const res = await postService.createPost(media)
+        const res = await postService.createPost(text, communityValue, mediaData)
         console.log(res)
     }
 
     const handleCameraUpload = async () => {
-        const res = await ImagePicker.launchCameraAsync({ mediaType: "mixed" })
+        const res = await ImagePicker.launchCameraAsync({ mediaTypes: "All" })
         handleMediaUpload(res)
     }
 
     const handleGalleryUpload = async () => {
-        const res = await ImagePicker.launchImageLibraryAsync({ mediaType: "mixed" })
+        const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: "All" })
         handleMediaUpload(res)
     }
 
@@ -91,7 +94,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                 {isHome && <DropDownPicker
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
-                    multiple={isHome}
+                    // multiple={isHome}
                     mode="BADGE"
                     open={communityOpen}
                     items={communityItems}
@@ -105,12 +108,6 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     zIndex={3000}
                     zIndexInverse={1000}
                 />}
-                {/* <TextInput
-                    style={sharedStyles.input}
-                    placeholder="Select Community"
-                    // value={community}
-                    // onChangeText={t => setCommunityText(t)}
-                /> */}
                 <Text style={sharedStyles.titleText}>Select Tags</Text>
                 <DropDownPicker
                     placeholder='Select Tags'
@@ -123,7 +120,6 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     onOpen={onTagOpen}
                     setOpen={setTagOpen}
                     setItems={setTagItems}
-                    schema={{ label: 'tag', value: '_id' }}
                     setValue={setTagValue}
                     closeOnBackPressed
                     zIndex={1000}
@@ -170,7 +166,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10
     },
     inputArea: {
-        // minHeight: Platform.OS == "web" ? '20%':'5%',
         borderWidth: 1,
         borderStyle: "solid",
         borderRadius: 12.5,
