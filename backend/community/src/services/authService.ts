@@ -53,7 +53,9 @@ export default class AuthService {
       const token = this.generateToken(userRecord);
 
       if (!userRecord) {
-        throw new Error('User cannot be created');
+        const error = new Error('User not registered');
+        error['status'] = 401;
+        throw error;
       }
 
       /**
@@ -84,7 +86,9 @@ export default class AuthService {
   public async signIn(email: string, password: string): Promise<{ user: IUser; token: string }> {
     const userRecord = await this.userRepositoryInstance.findUserByEmail(email);
     if (!userRecord) {
-      throw new Error('User not registered');
+      const error = new Error('User not registered');
+      error['status'] = 401;
+      throw error;
     }
     /**
      * We use verify from argon2 to prevent 'timing based' attacks
