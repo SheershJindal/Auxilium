@@ -27,6 +27,17 @@ export default class AuthService {
     this.emailServiceInstance = emailService;
   }
 
+  public getUser = async (userId: IUser['_id']) => {
+    try {
+      const userRecord = await this.userRepositoryInstance.findUserById(userId);
+      userRecord.password = undefined;
+      userRecord.salt = undefined;
+      return userRecord;
+    } catch (e) {
+      throw e;
+    }
+  };
+
   public async signUp(userInputDTO: IUserInputDTO): Promise<{ user: IUser; token: string }> {
     try {
       const { salt, hashedPassword } = await this.hashPassword(userInputDTO.password);
@@ -140,11 +151,7 @@ export default class AuthService {
 
       this.logger.silly('Updating user db record');
       const userId = record['_id'];
-      const userRecord = this.userRepositoryInstance.updatePasswordById(
-        userId,
-        salt.toString('hex'),
-        hashedPassword,
-      );
+      const userRecord = this.userRepositoryInstance.updatePasswordById(userId, salt.toString('hex'), hashedPassword);
       this.passwordResetRepositoryInstance.markTokenUsed(password_reset_token._id);
       const user = await userRecord;
 

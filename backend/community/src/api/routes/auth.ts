@@ -13,6 +13,8 @@ export default (app: Router) => {
 
   app.use('/auth', route);
 
+  route.get('/me', middlewares.isAuth, ctrl.getUser);
+
   route.post(
     '/signup',
     celebrate({

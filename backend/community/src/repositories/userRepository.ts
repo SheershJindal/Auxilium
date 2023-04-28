@@ -6,6 +6,15 @@ import { Service } from 'typedi';
 export class UserRepository {
   constructor() {}
 
+  public findUserById = async (userId: IUser['_id']): Promise<IUser> => {
+    try {
+      const user = await UserModel.findOne({ _id: userId }).lean();
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   public findUserByEmail = async (email: IUser['email']) => {
     try {
       const user = await UserModel.findOne({ email }).lean();
