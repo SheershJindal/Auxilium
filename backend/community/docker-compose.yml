@@ -21,6 +21,6 @@ services:
       # - KAFKA_DEFAULT_REPLICATION_FACTOR=3
       # - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9092
-
+    restart: always
     depends_on:
       - zookeeper
