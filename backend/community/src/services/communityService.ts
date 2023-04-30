@@ -133,6 +133,7 @@ export default class CommunityService {
       const communityObj = {};
       communityObj['_id'] = communityRecord._id;
       communityObj['name'] = communityRecord.name;
+      communityObj['description'] = communityRecord.description;
       communityObj['members'] = communityRecord.totalMembers;
       communityObj['joined'] = isJoined;
       communityObj['createdAt'] = communityRecord.createdAt;
