@@ -11,7 +11,7 @@ export default (app: Router) => {
 
   app.use('/community', route);
 
-  route.get('/', middlewares.isOfficerAuth, ctrl.getAllCommunities);
+  route.get('/', middlewares.isAuth, ctrl.getAllCommunities);
 
   route.get('/my', middlewares.isAuth, ctrl.getAllCommunitiesForUser);
 
