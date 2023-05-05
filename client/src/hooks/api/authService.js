@@ -10,18 +10,27 @@ const useAuthService = () => {
 
     const tokenFromStore = useSelector(state => state.auth.token)
 
-    const login = async () => {
-
+    const login = async (email, password) => {
+        try {
+            const unauthenticatedAxios = getUnauthenticatedAxios('/auth');
+            const response = await unauthenticatedAxios.post('/signin', { email, password });
+            let token = response.token;
+            const user = response.user;
+            token = `Bearer ${token}`
+            dispatch(loginUser({ token, user }))
+        } catch (error) {
+            throw error
+        }
     }
 
     const signup = async (username, email, password) => {
         try {
             const unauthenticatedAxios = getUnauthenticatedAxios('/auth')
-            // const response = await unauthenticatedAxios.post('/signup', { username, email, password })
-            const data = { token: Math.random().toString() }
-            const token = data['token'];
-            dispatch(loginUser(token))
-            return token;
+            const response = await unauthenticatedAxios.post('/signup', { username, email, password })
+            let { user, token } = response
+            token = `Bearer ${token}`
+            dispatch(loginUser({ user, token }))
+            return user;
         } catch (error) {
             throw error;
         }
@@ -46,11 +55,9 @@ const useAuthService = () => {
             dispatch(setLoading())
             const token = await AsyncStorage.getItem('@token');
             if (!token) return;
-            const authenticatedAxios = getAuthenticatedAxios('/users', token);
-            // const user = await (await authenticatedAxios.get('/me')).data['user'];
-            const user = { role: "user", email: "test@example.com", exp: 1666073513.056, iat: 1666044713 }
-            // await mockDelayedResolve(() => { }, 500)
-            dispatch(loginUser(token))
+            const authenticatedAxios = getAuthenticatedAxios('/auth', token);
+            const user = await authenticatedAxios.get('/me');
+            dispatch(loginUser({ token, user }))
             return user;
         } catch (error) {
             throw error;
@@ -62,7 +69,7 @@ const useAuthService = () => {
 
 
 
-    return { signup, logout, forgot, reset, getUserFromToken, token: tokenFromStore }
+    return { login, signup, logout, forgot, reset, getUserFromToken, token: tokenFromStore }
 
 }
 

@@ -58,7 +58,7 @@ const usePostService = () => {
             return createPostRequest
 
         } catch (err) {
-            console.log(err)
+            console.error(err)
         }
     }
 

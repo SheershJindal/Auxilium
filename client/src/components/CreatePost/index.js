@@ -56,7 +56,6 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
 
     const handleCreate = async () => {
         const res = await postService.createPost(text, communityValue, mediaData)
-        console.log(res)
     }
 
     const handleCameraUpload = async () => {
@@ -92,6 +91,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                 {isHome && <Text style={sharedStyles.titleText}>Select Community</Text>}
 
                 {isHome && <DropDownPicker
+                    ListEmptyComponent={() => <Text style={{ textAlign: 'center', padding: 5, paddingHorizontal: 10 }}>You need to subscribe to a community to post anything</Text>}
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
                     // multiple={isHome}

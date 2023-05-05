@@ -1,6 +1,7 @@
-import axios, { AxiosRequestHeaders } from "axios";
+import axios, { AxiosRequestHeaders, AxiosError } from "axios";
+import { useDispatch } from "react-redux";
 import config from "../../config";
-
+import { logoutUser } from "../../store/reducers/authSlice";
 // interface Options {
 //   headers?: {
 //     "Content-Type"?: "application/json" | "multipart/form-data";
@@ -44,6 +45,7 @@ export const getUnauthenticatedAxios = (url = "", options = {}) => {
       return res.data;
     },
     (error) => {
+      console.log(error.response.status)
       let err = error.response.data;
       console.error(err);
       throw err;
@@ -63,7 +65,6 @@ export const getAuthenticatedAxios = (url, token, options = {}) => {
       return res.data;
     },
     (error) => {
-      console.log(error)
       let err = { ...error.response.data, status: error.response.status };
       console.error(err);
       throw err;

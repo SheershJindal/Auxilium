@@ -16,11 +16,29 @@ const useCommunityService = () => {
             const response = await authenticatedAxios.get('/my')
             return response
         } catch (e) {
+        }
+    }
+
+    const getAllCommunities = async () => {
+        try {
+            const authenticatedAxios = getAuthenticatedAxios('/community', tokenFromStore);
+            const response = await authenticatedAxios.get('/');
+            return response;
+        } catch (error) {
+        }
+    }
+
+    const getCommunity = async (id) => {
+        try {
+            const authenticatedAxios = getAuthenticatedAxios('/community', tokenFromStore);
+            const response = await authenticatedAxios.get(`${id}?page=0`);
+            return response
+        } catch (error) {
 
         }
     }
 
-    return { getSubscribedCommunities }
+    return { getSubscribedCommunities, getAllCommunities, getCommunity }
 
 }
 

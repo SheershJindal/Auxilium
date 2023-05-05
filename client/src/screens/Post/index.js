@@ -15,7 +15,6 @@ const Post = ({ route, navigation }) => {
     </>
 
     const { id } = route.params || ""
-    console.log(id)
 
     const [imageZoomStatus, setImageZoomStatus] = useState({ id: undefined, isOpen: false })
 
