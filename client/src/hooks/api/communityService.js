@@ -38,7 +38,27 @@ const useCommunityService = () => {
         }
     }
 
-    return { getSubscribedCommunities, getAllCommunities, getCommunity }
+    const subscribeToCommunity = async (communityId) => {
+        try {
+            const communityAxios = getAuthenticatedAxios('/community', tokenFromStore);
+            const response = await communityAxios.post(`/${communityId}/subscribe`);
+            return response;
+        } catch (error) {
+
+        }
+    }
+
+    const leaveSubscribedCommunity = async (communityId) => {
+        try {
+            const communityAxios = getAuthenticatedAxios('/community', tokenFromStore);
+            const response = await communityAxios.delete(`/${communityId}/leave`);
+            return response;
+        } catch (error) {
+
+        }
+    }
+
+    return { getSubscribedCommunities, getAllCommunities, getCommunity, subscribeToCommunity, leaveSubscribedCommunity }
 
 }
 
