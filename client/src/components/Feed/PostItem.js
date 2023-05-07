@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Platform, Modal } from 'react-native'
-import React from 'react'
-import { Entypo, Ionicons } from '@expo/vector-icons'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Platform, Modal, Dimensions } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { AntDesign, Entypo, Ionicons } from '@expo/vector-icons'
 import colors from '../../theme/colors'
 import ImageViewer from 'react-native-image-zoom-viewer'
 
-const PostItem = ({ id, user, postedAt, post, photoUrl, likes, comments, imageZoomStatus, setImageZoomStatus, isShownInDiscover = true, navigation }) => {
+const PostItem = ({ id, profilePhotoUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png", username, postedAt, content, likes, dislikes, isShownInDiscover = false, navigation, likedByMe = false, dislikedByMe = false, imageURI = "", imageZoomStatus, setImageZoomStatus, }) => {
 
     const openModal = () =>
         setImageZoomStatus({ id: id, isOpen: true })
@@ -14,50 +14,57 @@ const PostItem = ({ id, user, postedAt, post, photoUrl, likes, comments, imageZo
         setImageZoomStatus(prev => ({ ...prev, isOpen: false }))
 
     const handleCommentPress = () =>
-        navigation.navigate("Post")
+        navigation.navigate("Post", { id })
 
     const isModalVisible = (imageZoomStatus.id == id && imageZoomStatus.isOpen)
 
     return <View style={{ ...postStyles.container, backgroundColor: isShownInDiscover ? '#fff' : 'none' }}>
         <View style={postStyles.headerContainer}>
-            <Image style={postStyles.profilePhoto} source={{ uri: user.profilePhotoUrl }} />
+            <Image style={postStyles.profilePhoto} source={{ uri: profilePhotoUrl }} />
             <View style={postStyles.infoContainer}>
-                <Text style={{ fontSize: 16, margin: 0, padding: 0, color: '#0f0f0f' }}>{user.username}</Text>
+                <Text style={{ fontSize: 16, margin: 0, padding: 0, color: '#0f0f0f' }}>{username}</Text>
                 <Text style={{ fontSize: 11, ...margin(4, 0, 0, 0), padding: 0, color: colors.tertiary }}>{postedAt}</Text>
             </View>
             <TouchableOpacity style={postStyles.PostOptions}>
                 <Entypo name="dots-three-horizontal" size={16} color={colors.secondary} />
             </TouchableOpacity>
         </View>
-        <View style={{ ...postStyles.post, marginLeft: isShownInDiscover ? 64 : 0 }}>
-            <Text>{post}</Text>
-            <TouchableOpacity onPress={openModal}>
-                <Image style={postStyles.image} source={{ uri: photoUrl }} />
-            </TouchableOpacity>
+        <View>
+            <Text>{content}</Text>
+            {imageURI && <TouchableOpacity onPress={openModal}>
+                <Image style={postStyles.image} source={{ uri: imageURI }} />
+            </TouchableOpacity>}
+
             <Modal visible={isModalVisible} transparent={true} onRequestClose={closeModal}>
                 <ImageViewer
-                    imageUrls={[{ url: photoUrl }]}
+                    imageUrls={[{ url: imageURI }]}
                     onShowModal={openModal}
                     onCancel={closeModal}
                     enableSwipeDown={true}
                     saveToLocalByLongPress={false}
-                    renderIndicator={() => <View style={zoomedImageStyles.headerContainer}><Text style={zoomedImageStyles.text}>{user.username}</Text></View>}
-                    renderFooter={() => <View><Text style={zoomedImageStyles.text}>{post}</Text></View>}
+                    renderIndicator={() => <View style={zoomedImageStyles.headerContainer}><Text style={zoomedImageStyles.text}>{username}</Text></View>}
+                    renderFooter={() => <View style={{ width: Dimensions.get('window').width }}><Text style={zoomedImageStyles.text}>{content}</Text></View>}
                     menus={() => null}
                 />
             </Modal>
             <View style={postStyles.details}>
                 <View style={postStyles.likes}>
                     <TouchableOpacity>
-                        <Ionicons name="ios-heart-outline" size={24} color={colors.secondary} />
+                        <AntDesign name={likedByMe ? 'like1' : 'like2'} size={16} color={likedByMe ? "black" : colors.secondary} />
                     </TouchableOpacity>
                     <Text style={{ fontSize: 11, ...margin(0, 0, 0, 8), padding: 0, color: '#0f0f0f' }}>{likes}</Text>
+
+                </View>
+                <View style={postStyles.likes}>
+                    <TouchableOpacity>
+                        {/* <Ionicons name="ios-heart-outline" size={24} color={colors.secondary} /> */}
+                        <AntDesign name={dislikedByMe ? "dislike1" : "dislike2"} size={16} color={dislikedByMe ? 'black' : colors.secondary} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 11, ...margin(0, 0, 0, 8), padding: 0, color: '#0f0f0f' }}>{dislikes}</Text>
+
                 </View>
                 {isShownInDiscover && <View style={postStyles.comments}>
-                    <TouchableOpacity onPress={handleCommentPress}>
-                        <Ionicons name="ios-chatbox-outline" size={24} color={colors.secondary} />
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 11, ...margin(0, 0, 0, 8), padding: 0, color: '#0f0f0f' }}>{comments}</Text>
+                    <Ionicons name="ios-chatbox-outline" size={24} color={colors.secondary} />
                 </View>}
             </View>
         </View>
@@ -80,7 +87,7 @@ const postStyles = StyleSheet.create({
     },
     container: {
         // ...margin(16, 16, 0, 16),
-        marginBottom:16,
+        marginBottom: 16,
         borderRadius: 6,
         padding: 8,
     },
@@ -113,7 +120,8 @@ const postStyles = StyleSheet.create({
     },
     likes: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginRight: 10
     },
     comments: {
         flexDirection: 'row',

@@ -12,11 +12,27 @@ const Feed = ({ navigation, isCommunityFeed }) => {
     const Posts = () =>
         <FlatList
             data={feedData}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item._id}
             renderItem={({ item }) => {
-                const { id, user, postedAt, post, photoUrl, likes, comments } = item;
-                return <TouchableOpacity onPress={() => navigation.navigate("Post", { id })} activeOpacity={0.7}>
-                    <PostItem id={id} user={user} postedAt={postedAt} post={post} photoUrl={photoUrl} likes={likes} comments={comments} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} navigation={navigation} />
+                const { _id, likes, dislikedByMe, dislikes, data, communityId, createdAt, createdBy, likedByMe, type, updatedAt, comments } = item;
+                return <TouchableOpacity onPress={() => navigation.navigate("Post", { id: _id })} activeOpacity={0.7}>
+                    <PostItem
+                        id={_id}
+                        username={createdBy.username}
+                        profilePhotoUrl={createdBy.profilePhotoUrl}
+                        postedAt={createdAt}
+                        content={data.content}
+                        imageURI={data.imageURI}
+                        likes={likes}
+                        dislikes={dislikes}
+                        comments={comments}
+                        imageZoomStatus={imageZoomStatus}
+                        setImageZoomStatus={setImageZoomStatus}
+                        navigation={navigation}
+                        likedByMe={likedByMe}
+                        dislikedByMe={dislikedByMe}
+                        isShownInDiscover={true}
+                    />
                 </TouchableOpacity>
             }}
         />

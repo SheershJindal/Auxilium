@@ -3,9 +3,8 @@ import React, { useState } from 'react'
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import mockDelayedResponse from '../../utils/mockDelayedResponse';
 
-const CommentComponent = ({ comment }) => {
-
-    const { id, text, likes, dislikes, children, postedAt, username, profilePhotoUrl } = comment;
+const CommentComponent = ({ _id, children, isEdited = false, likes, dislikes, userId, postId, content, parentId, createdAt, updatedAt, likedByMe, dislikedByMe, setReplyingTo, profilePhotoURI }) => {
+    // const { id, text, likes, dislikes, children, postedAt, username, profilePhotoUrl } = comment;
 
     const [isLiked, setIsLiked] = useState(false)
     const [isDisliked, setIsDisliked] = useState(false)
@@ -31,10 +30,13 @@ const CommentComponent = ({ comment }) => {
         setIsDisliked(false)
     }
 
+    const replyTo = () => {
+        setReplyingTo({ id: _id, commentContent: content })
+    }
 
     return (
         <TouchableOpacity activeOpacity={0.6} onPress={() => setIsChildrenExpanded(prev => !prev)} style={{ marginLeft: 10, paddingLeft: 10, paddingTop: 10, borderLeftWidth: 0.5 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ marginRight: 10 }}>
                     {
                         /**
@@ -45,19 +47,18 @@ const CommentComponent = ({ comment }) => {
                          * Will remove this once the app is ready to ship to production 
                          */
                     }
-                    {profilePhotoUrl ?
-                        <Image source={{ uri: profilePhotoUrl }} style={{ height: 25, aspectRatio: 1, borderRadius: 50 }} /> :
-                        <Image source={{ uri: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" }} style={{ height: 25, aspectRatio: 1, borderRadius: 50 }} />
-                    }
+                    <Image source={{ uri: profilePhotoURI }} style={{ height: 25, aspectRatio: 1, borderRadius: 50 }} />
                 </View>
-                <Text style={{ marginRight: 10 }}>{username}</Text>
-                <Text>{postedAt.toString()}</Text>
+                <Text style={{ marginRight: 10 }}>{userId}</Text>
+                <Text>{createdAt}</Text>
             </View>
             <View style={{}}>
-                <Text>{text}</Text>
+                <Text>{content} {_id}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'space-evenly', marginBottom: 20 }}>
-                <Octicons name="reply" size={16} color="black" style={{ marginRight: 10 }} />
+                <TouchableOpacity onPress={replyTo}>
+                    <Octicons name="reply" size={16} color="black" style={{ marginRight: 10 }} />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={!isLiked ? like : unlike} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 10 }}>
                     {isLiked ?
                         <AntDesign name="like1" size={16} color="black" />
@@ -71,7 +72,7 @@ const CommentComponent = ({ comment }) => {
                     <Text>{dislikes}</Text>
                 </TouchableOpacity>
             </View>
-            {isChildrenExpanded && children && children.length > 0 && children.map(child => <CommentComponent comment={child} key={child.id} />)}
+            {isChildrenExpanded && children && children.length > 0 && children.map(child => <CommentComponent key={child._id} {...child} setReplyingTo={setReplyingTo} />)}
             {
                 /** 
                  * @TODO If not expanded, we render the first child in a small view 
@@ -85,9 +86,21 @@ const CommentComponent = ({ comment }) => {
     )
 }
 
-const Comments = ({ comments }) => {
+const Comments = ({ comments, setReplyingTo }) => {
     return <View style={{ flex: 1 }}>
-        {comments.map(comment => <CommentComponent comment={comment} key={comment.id} />)}
+        {comments.map(({ _id, children,
+            isEdited,
+            likes,
+            dislikes,
+            userId,
+            postId,
+            content,
+            parentId,
+            createdAt,
+            updatedAt,
+            likedByMe,
+            dislikedByMe,
+            profilePhotoURI }) => <CommentComponent key={_id} children={children} isEdited={isEdited} likes={likes} content={content} createdAt={createdAt} dislikedByMe={dislikedByMe} dislikes={dislikes} _id={_id} likedByMe={likedByMe} parentId={parentId} postId={postId} updatedAt={updatedAt} userId={userId} setReplyingTo={setReplyingTo} profilePhotoURI={profilePhotoURI} />)}
     </View>
 
 }

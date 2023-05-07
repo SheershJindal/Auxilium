@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native/"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useDispatch, useSelector } from "react-redux";
@@ -106,6 +106,7 @@ const Routes = () => {
 
     return (
         <SafeAreaProvider>
+            {/* <SafeAreaView> */}
             <NavigationContainer linking={linking}>
                 <View style={{ flex: 1 }}>
                     {
@@ -118,6 +119,7 @@ const Routes = () => {
                     {!isLoading && isSignedIn && <AppStackScreens />}
                 </View>
             </NavigationContainer>
+            {/* </SafeAreaView> */}
         </SafeAreaProvider>
     )
 }

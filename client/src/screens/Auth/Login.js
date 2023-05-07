@@ -9,7 +9,7 @@ const Login = ({ handleForgotPassword, handleSignupInstead }) => {
     const authService = useAuthService()
 
     const handleLogin = () => {
-        authService.signup(email, password)
+        authService.login(email, password)
     }
 
     const passwordInputRef = useRef()

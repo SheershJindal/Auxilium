@@ -133,6 +133,7 @@ export default class CommunityService {
       const communityObj = {};
       communityObj['_id'] = communityRecord._id;
       communityObj['name'] = communityRecord.name;
+      communityObj['description'] = communityRecord.description;
       communityObj['members'] = communityRecord.totalMembers;
       communityObj['joined'] = isJoined;
       communityObj['createdAt'] = communityRecord.createdAt;
@@ -162,6 +163,8 @@ export default class CommunityService {
           post['createdBy'] = {};
           post['createdBy']['_id'] = post.userId;
           post['createdBy']['username'] = post.username;
+          post['createdBy']['profilePhotoUrl'] =
+            'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
           delete post.userId;
           delete post.likedBy;
