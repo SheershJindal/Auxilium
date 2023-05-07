@@ -366,6 +366,7 @@ export class PostService {
 
         comment['likedByMe'] = likedByMe;
         comment['dislikedByMe'] = dislikedByMe;
+        comment['profilePhotoURI'] = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
         arr.push(comment);
       }
       arr.sort((a, b) => b.createdAt - a.createdAt);
