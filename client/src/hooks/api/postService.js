@@ -53,8 +53,13 @@ const usePostService = () => {
 
                 mediaRequest = await mediaAxios.post('/media', formData)
             }
+            let createPostRequest;
+            if (!mediaRequest) {
+                createPostRequest = await createPostAxios.post(`/${communityId}`, JSON.stringify({ data: { content: text } }))
+            } else {
+                createPostRequest = await createPostAxios.post(`/${communityId}`, JSON.stringify({ data: { content: text, imageURI: mediaRequest.photos[0] } }))
+            }
 
-            const createPostRequest = await createPostAxios.post('/' + communityId, { data: { content: text, imageURI: mediaRequest.photos[0] } })
             return createPostRequest
 
         } catch (err) {

@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, TouchableOpacity, Text, TextInput, SafeAreaView, View } from 'react-native'
+import { Platform, StyleSheet, TouchableOpacity, Text, TextInput, SafeAreaView, View, Image, ActivityIndicator } from 'react-native'
 import React, { useState, useCallback, useEffect } from 'react'
 import colors from "../../theme/colors"
 import sharedStyles from '../../screens/Auth/sharedStyles'
@@ -8,7 +8,7 @@ import useCommunityService from '../../hooks/api/communityService'
 import useTagService from '../../hooks/api/tagService'
 import usePostService from '../../hooks/api/postService'
 
-const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
+const CreatePost = ({ isHome, communityId, communityName }) => {
     const communityService = useCommunityService()
     const tagService = useTagService()
     const postService = usePostService()
@@ -35,9 +35,15 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
         getTags()
     }, [])
 
-    const [communityValue, setCommunityValue] = useState(null)
+    const [communityValue, setCommunityValue] = useState(communityId)
     const [tagOpen, setTagOpen] = useState(false)
     const [tagValue, setTagValue] = useState(null)
+    const [sending, setSending] = useState(false)
+
+    useEffect(() => {
+        setCommunityValue(communityId)
+    }, [communityId])
+
 
     const onCommunityOpen = useCallback(() => {
         setTagOpen(false)
@@ -55,7 +61,9 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
     }
 
     const handleCreate = async () => {
+        setSending(true)
         const res = await postService.createPost(text, communityValue, mediaData)
+        setSending(false)
     }
 
     const handleCameraUpload = async () => {
@@ -80,17 +88,18 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     onChangeText={t => setText(t)}
                 />
                 <Text style={sharedStyles.titleText}>Upload</Text>
+                {mediaData.URI && <Image source={{ uri: mediaData.URI }} style={{ height: 200, width: '100%', resizeMode: 'contain' }} />}
                 <View style={styles.uploadContainer}>
                     {Platform.OS !== 'web' && <TouchableOpacity style={styles.button} onPress={handleCameraUpload}>
-                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16 }}>From Camera</Text>
+                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16, fontWeight: undefined }}>From Camera</Text>
                     </TouchableOpacity>}
                     <TouchableOpacity style={styles.button} onPress={handleGalleryUpload}>
-                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16 }}>From Gallery</Text>
+                        <Text style={{ ...sharedStyles.buttonText, fontSize: 16, fontWeight: undefined }}>From Gallery</Text>
                     </TouchableOpacity>
                 </View>
                 {isHome && <Text style={sharedStyles.titleText}>Select Community</Text>}
 
-                {isHome && <DropDownPicker
+                {/* {isHome && <DropDownPicker
                     ListEmptyComponent={() => <Text style={{ textAlign: 'center', padding: 5, paddingHorizontal: 10 }}>You need to subscribe to a community to post anything</Text>}
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
@@ -107,7 +116,7 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     closeOnBackPressed
                     zIndex={3000}
                     zIndexInverse={1000}
-                />}
+                />} */}
                 <Text style={sharedStyles.titleText}>Select Tags</Text>
                 <DropDownPicker
                     placeholder='Select Tags'
@@ -125,8 +134,8 @@ const CreatePost = ({ isHome, communityName = "Community_Name" }) => {
                     zIndex={1000}
                     zIndexInverse={3000}
                 />
-                <TouchableOpacity style={sharedStyles.button} onPress={handleCreate}>
-                    <Text style={sharedStyles.buttonText}>Create</Text>
+                <TouchableOpacity style={sharedStyles.button} onPress={sending ? () => { } : handleCreate}>
+                    {sending ? <ActivityIndicator color='white' /> : <Text style={sharedStyles.buttonText}>Create</Text>}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
