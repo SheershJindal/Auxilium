@@ -62,7 +62,30 @@ const usePostService = () => {
         }
     }
 
-    return { createPost }
+    const getPostById = async (postId) => {
+        try {
+            const postAxios = getAuthenticatedAxios('/post', tokenFromStore);
+            const response = await postAxios.get(`/${postId}`);
+            return response;
+        } catch (error) {
+
+        }
+    }
+
+    const createComment = async (postId, content, parentCommentId = undefined) => {
+        try {
+            const postAxios = getAuthenticatedAxios('/post', tokenFromStore);
+            const response = await postAxios.post(`/${postId}/comment`, {
+                content,
+                parentId: parentCommentId
+            });
+            return response;
+        } catch (error) {
+
+        }
+    }
+
+    return { createPost, getPostById, createComment };
 
 }
 

@@ -19,7 +19,6 @@ const CustomDrawer = ({ navigation, ...props }) => {
     useEffect(() => {
         (async () => {
             const communities = await communityService.getAllCommunities();
-            console.log(communities)
             setCommunities(communities)
         })();
     }, [])
