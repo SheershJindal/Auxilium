@@ -35,10 +35,8 @@ export class PostController {
     try {
       const officerId = req.currentUser.userId;
       const data = req.body.data as IPostInputDTO['data'];
-      const communityId = req.params.communityId as unknown as IPostInputDTO['communityId'];
 
       const post = await this.postServiceInstance.officerCreatesAnnouncement({
-        communityId,
         data,
         userId: officerId,
       });

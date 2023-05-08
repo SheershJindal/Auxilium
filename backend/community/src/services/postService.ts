@@ -1,7 +1,7 @@
 import config from '@/config';
 import { IComment, ICommentCreateInputDTO } from '@/interfaces/IComment';
 import { KafkaSearchTopic } from '@/interfaces/IKafka';
-import { IPost, IPostInputDTO, IPostMinInputDTO } from '@/interfaces/IPost';
+import { IAnnouncementInputDTO, IPost, IPostInputDTO, IPostMinInputDTO } from '@/interfaces/IPost';
 import { producer } from '@/loaders/kafka';
 import { CommentRepository } from '@/repositories/commentRepository';
 import { PostRepository } from '@/repositories/postRepository';
@@ -57,12 +57,12 @@ export class PostService {
     }
   };
 
-  public officerCreatesAnnouncement = async (postInputDTO: IPostMinInputDTO) => {
+  public officerCreatesAnnouncement = async (announcementInputDTO: IAnnouncementInputDTO) => {
     try {
       this.logger.silly('Creating post record');
 
-      const postRecord = await this.postRepositoryInstance.createPost({ ...postInputDTO, type: 'Announcement' });
-      if (!postRecord) throw 'Post cannot be created';
+      const postRecord = await this.postRepositoryInstance.createPost({ ...announcementInputDTO, type: 'Announcement' });
+      if (!postRecord) throw 'Announcement cannot be created';
       const post = { ...postRecord };
 
       await this.pushPostForCreatingIndex(post);

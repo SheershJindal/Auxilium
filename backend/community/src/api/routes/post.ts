@@ -10,9 +10,9 @@ export default (app: Router) => {
 
   app.use('/post', route);
 
+  route.post('/announcement', middlewares.isOfficerAuth, ctrl.officerCreatesAnnouncement);
+  
   route.post('/:communityId', middlewares.isAuth, ctrl.createPost);
-
-  route.post('/announcement/:communityId', middlewares.isOfficerAuth, ctrl.officerCreatesAnnouncement);
 
   route.delete('/:postId', middlewares.isAuth, ctrl.deletePost);
 

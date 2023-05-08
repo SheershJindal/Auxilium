@@ -18,7 +18,6 @@ const Post = new mongoose.Schema(
     data: dataSchema,
     communityId: {
       type: mongoose.Types.ObjectId,
-      required: true,
       index: true,
     },
     userId: {

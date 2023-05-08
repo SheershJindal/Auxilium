@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import CreatePost from '../../components/CreatePost'
 
 const Announcements = () => {
   return (
-    <View>
-      <Text>Announcements</Text>
-    </View>
+    <>
+      <CreatePost isAnnouncement={true} />
+    </>
   )
 }
 
