@@ -31,18 +31,16 @@ export class PostController {
     }
   };
 
-  public adminCreatesPostForAnnouncement = async (req: IRequest, res: IResponse, next: INextFunction) => {
+  public officerCreatesAnnouncement = async (req: IRequest, res: IResponse, next: INextFunction) => {
     try {
-      const adminId = req.currentUser.userId;
+      const officerId = req.currentUser.userId;
       const data = req.body.data as IPostInputDTO['data'];
       const communityId = req.params.communityId as unknown as IPostInputDTO['communityId'];
-      const announcementId = req.body.announcementId as IPostInputDTO['announcementId'];
 
-      const post = await this.postServiceInstance.adminCreatesPostForAnnouncement({
+      const post = await this.postServiceInstance.officerCreatesAnnouncement({
         communityId,
         data,
-        announcementId,
-        userId: adminId,
+        userId: officerId,
       });
 
       return res.status(200).json(Result.success(post));

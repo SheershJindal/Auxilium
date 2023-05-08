@@ -12,7 +12,7 @@ export default (app: Router) => {
 
   route.post('/:communityId', middlewares.isAuth, ctrl.createPost);
 
-  route.post('/announcement/:communityId', middlewares.isAdminAuth, ctrl.adminCreatesPostForAnnouncement);
+  route.post('/announcement/:communityId', middlewares.isOfficerAuth, ctrl.officerCreatesAnnouncement);
 
   route.delete('/:postId', middlewares.isAuth, ctrl.deletePost);
 

@@ -57,7 +57,7 @@ export class PostService {
     }
   };
 
-  public adminCreatesPostForAnnouncement = async (postInputDTO: IPostMinInputDTO) => {
+  public officerCreatesAnnouncement = async (postInputDTO: IPostMinInputDTO) => {
     try {
       this.logger.silly('Creating post record');
 

@@ -5,7 +5,6 @@ export interface IPost {
   data: IPostData;
   communityId: Types.ObjectId;
   userId: Types.ObjectId;
-  announcementId?: Types.ObjectId;
   likes: number;
   dislikes: number;
   likedBy: Types.ObjectId[];
@@ -26,7 +25,6 @@ export interface IPostInputDTO {
   communityId: IPost['communityId'];
   userId: IPost['userId'];
   type?: IPost['type'];
-  announcementId?: IPost['announcementId'];
 }
 
 export type IPostMinInputDTO = Omit<IPostInputDTO, 'type'>;
