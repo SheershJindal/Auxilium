@@ -15,7 +15,6 @@ const Search = ({ navigation }) => {
 
   const INITIAL_STATE = { type: "post", data: {}, predictions: [], communities: [], posts: [], comments: [] };
 
-  
   function reducer(state, action) {
     switch (action.type) {
       case "RESET_STATE":
@@ -77,8 +76,8 @@ const Search = ({ navigation }) => {
       customDispatch({ type: action })
     }
     const selected = state.type == type;
-    return <TouchableOpacity onPress={onPress} style={{ borderBottomWidth: selected ? 2 : 0.5, flex: 1, marginHorizontal: 10, borderColor: selected ? colors.primary : 'black' }}>
-      <Text style={{ fontSize: 15, color: selected ? colors.primary : 'black', width: '100%', textAlign: 'center' }}>{value}</Text>
+    return <TouchableOpacity onPress={onPress} style={{ borderBottomWidth: selected ? 2 : 0, flex: 1, borderColor: colors.primary }}>
+      <Text style={{ fontSize: 15, fontWeight: 'bold', color: selected ? colors.primary : 'black', width: '100%', textAlign: 'center' }}>{value}</Text>
     </TouchableOpacity>
   }
 
