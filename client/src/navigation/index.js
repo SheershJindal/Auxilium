@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native/"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +21,7 @@ import Settings from "../screens/Settings"
 import Post from "../screens/Post";
 import ReactToPost from "../screens/ReactToPost";
 import CreatePostHome from "../screens/CreatePostHome";
+import Search from "../screens/Search";
 
 
 const Routes = () => {
@@ -51,6 +52,7 @@ const Routes = () => {
     const AppStackScreens = () => (
         <AppStack.Navigator>
             <AppStack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
+            <Drawer.Screen name="Search" component={Search} options={{ headerShown: false }} />
             <AppStack.Screen name="Post" component={Post} options={{ headerShown: false, }} />
             <AppStack.Screen name="ReactToPost" component={ReactToPost} options={({ route }) => ({ title: route.params.title })} />
             <AppStack.Screen name="CreatePost" component={CreatePostHome} initialParams={{ isHome: true, communityName: 'Home' }} options={{ headerShown: false }} />
@@ -62,7 +64,14 @@ const Routes = () => {
             <Drawer.Screen name="Discover" component={Discover}
                 options={({ route, navigation }) => ({
                     headerRight: () => (
-                        <Ionicons name="create-outline" size={30} style={{ marginRight: 20 }} onPress={() => navigation.navigate('CreatePost')} />
+                        <View style={{ flexDirection: 'row', marginRight: 20, alignItems: 'center' }}>
+                            <TouchableOpacity style={{ marginRight: 10, padding: 5, }}>
+                                <Ionicons name="search-outline" size={30} onPress={() => navigation.navigate('Search')} />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ padding: 5 }} onPress={() => navigation.navigate('CreatePost')} >
+                                <Ionicons name="create-outline" size={30} />
+                            </TouchableOpacity>
+                        </View>
                     )
                 })} />
             <Drawer.Screen name="Community" component={Community} />
@@ -81,7 +90,8 @@ const Routes = () => {
             //     ...styles.shadow
             // },
             tabBarActiveTintColor: colors.primary,
-            tabBarInactiveTintColor: colors.secondary
+            tabBarInactiveTintColor: colors.secondary,
+            tabBarHideOnKeyboard: true
         }}
         >
             <Tab.Screen name="Home" component={HomeMobileStack}
@@ -106,7 +116,6 @@ const Routes = () => {
 
     return (
         <SafeAreaProvider>
-            {/* <SafeAreaView> */}
             <NavigationContainer linking={linking}>
                 <View style={{ flex: 1 }}>
                     {
@@ -119,7 +128,6 @@ const Routes = () => {
                     {!isLoading && isSignedIn && <AppStackScreens />}
                 </View>
             </NavigationContainer>
-            {/* </SafeAreaView> */}
         </SafeAreaProvider>
     )
 }

@@ -2,6 +2,7 @@ import { SearchService } from '@/services/searchService';
 import { Inject, Service } from 'typedi';
 import { Logger } from 'winston';
 import { INextFunction, IRequest, IResponse } from '../types/express';
+import { Result } from '../util/result';
 
 @Service()
 export class SearchController {
@@ -20,7 +21,7 @@ export class SearchController {
       const term = req.query.term;
       const results = await this.searchServiceInstance.search(term);
 
-      return res.status(200).json(results);
+      return res.status(200).json(Result.success(results));
     } catch (error) {
       return next(error);
     }
