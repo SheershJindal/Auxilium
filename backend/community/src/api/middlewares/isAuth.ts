@@ -38,7 +38,7 @@ const baseAuth = async (req: IRequest, res: IResponse, next: INextFunction, type
   try {
     const tokenFromHeader = getTokenFromHeader(req);
     const token = checkToken(tokenFromHeader);
-    if (!(token.role == 'admin' || token.role == type)) return next(getErrorMessage(type));
+    if (!(token.role == 'admin' || token.role == 'officer' || token.role == type)) return next(getErrorMessage(type));
     logger.debug('User authenticated %o', token);
 
     req.currentUser = token;

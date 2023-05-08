@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 export interface IPost {
   _id: Types.ObjectId;
   data: IPostData;
-  communityId: Types.ObjectId;
+  communityId?: Types.ObjectId;
   userId: Types.ObjectId;
   likes: number;
   dislikes: number;
@@ -22,9 +22,12 @@ export interface IPostData {
 
 export interface IPostInputDTO {
   data: IPost['data'];
-  communityId: IPost['communityId'];
+  communityId?: IPost['communityId'];
   userId: IPost['userId'];
   type?: IPost['type'];
 }
-
+export interface IAnnouncementInputDTO {
+  data: IPost['data'];
+  userId: IPost['userId'];
+}
 export type IPostMinInputDTO = Omit<IPostInputDTO, 'type'>;
