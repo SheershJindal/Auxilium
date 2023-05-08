@@ -99,7 +99,7 @@ const CreatePost = ({ isHome, communityId, communityName }) => {
                 </View>
                 {isHome && <Text style={sharedStyles.titleText}>Select Community</Text>}
 
-                {/* {isHome && <DropDownPicker
+                {isHome && <DropDownPicker
                     ListEmptyComponent={() => <Text style={{ textAlign: 'center', padding: 5, paddingHorizontal: 10 }}>You need to subscribe to a community to post anything</Text>}
                     disabled={!isHome}
                     placeholder={isHome ? 'Select Communities' : communityName}
@@ -116,7 +116,7 @@ const CreatePost = ({ isHome, communityId, communityName }) => {
                     closeOnBackPressed
                     zIndex={3000}
                     zIndexInverse={1000}
-                />} */}
+                />}
                 <Text style={sharedStyles.titleText}>Select Tags</Text>
                 <DropDownPicker
                     placeholder='Select Tags'

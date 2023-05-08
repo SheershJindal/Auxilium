@@ -21,6 +21,8 @@
     "expo": "~47.0.8",
     "expo-image-picker": "~14.0.2",
     "expo-status-bar": "~1.4.2",
+    "lodash.debounce": "^4.0.8",
+    "lodash.isempty": "^4.4.0",
     "mime": "^3.0.0",
     "prop-types": "^15.8.1",
     "react": "18.1.0",

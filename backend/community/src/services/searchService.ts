@@ -79,35 +79,32 @@ export class SearchService {
       { indexName: config.search.commentsIndex, query: term, params: { hitsPerPage: 5 } },
     ]);
 
-    const response = results.map(indexHit => {
-      const { hits, index } = indexHit;
-      const obj = {};
+    const obj = { communities: {}, posts: {}, comments: {} };
 
-      let indexType;
+    results.map(indexHit => {
+      const { hits, index } = indexHit;
+
       switch (index) {
         case config.search.communitiesIndex:
-          indexType = 'communities';
+          obj['communities']['hits'] = hits;
           break;
         case config.search.postsIndex:
-          indexType = 'posts';
+          obj['posts']['hits'] = hits;
           break;
         case config.search.commentsIndex:
-          indexType = 'comments';
+          obj['comments']['hits'] = hits;
           break;
       }
-      obj['type'] = indexType;
-      obj['hits'] = hits;
-      return obj;
     });
 
-    return response;
+    return obj;
   };
 
   private createCommunity = async (community: ICommunity) => {
-    community = {...community}
+    community = { ...community };
     community.moderators = undefined;
     community['__v'] = undefined;
-    
+
     const { objectID } = await this.communitiesIndex.saveObject(community, { autoGenerateObjectIDIfNotExist: true });
     this.logger.debug(`Indexed community with communityId ${community._id} and algoliaObjectId ${objectID}`);
     return objectID;
