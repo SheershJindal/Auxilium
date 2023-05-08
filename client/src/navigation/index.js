@@ -28,6 +28,7 @@ const Routes = () => {
 
     const isLoading = useSelector(state => state.auth.isLoading);
     const isSignedIn = useSelector(state => state.auth.isLoggedIn);
+    const user = useSelector(state => state.auth.user);
     const AuthStack = createNativeStackNavigator();
     const AppStack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
@@ -100,11 +101,11 @@ const Routes = () => {
                     tabBarIcon: ({ focused }) => <Entypo name="home" size={24} color={focused ? colors.primary : colors.secondary} />
                 }}
             />
-            <Tab.Screen name="Announcement" component={Announcements}
+            {user.role == "officer" && <Tab.Screen name="Announcement" component={Announcements}
                 options={{
                     title: 'Announcements', tabBarIcon: ({ focused }) =>
                         <Entypo name="megaphone" size={30} color={focused ? colors.primary : colors.secondary} />,
-                }} />
+                }} />}
             <Tab.Screen name="Settings" component={Settings}
                 options={{
                     tabBarIcon: ({ focused }) =>

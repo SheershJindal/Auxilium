@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, TouchableOpacity, Text, TextInput, SafeAreaView, View, Image, ActivityIndicator } from 'react-native'
+import { Platform, StyleSheet, TouchableOpacity, Text, TextInput, SafeAreaView, View, Image, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import React, { useState, useCallback, useEffect } from 'react'
 import colors from "../../theme/colors"
 import sharedStyles from '../../screens/Auth/sharedStyles'
@@ -8,7 +8,7 @@ import useCommunityService from '../../hooks/api/communityService'
 import useTagService from '../../hooks/api/tagService'
 import usePostService from '../../hooks/api/postService'
 
-const CreatePost = ({ isHome, communityId, communityName }) => {
+const CreatePost = ({ isHome, communityId, communityName, isAnnouncement = false }) => {
     const communityService = useCommunityService()
     const tagService = useTagService()
     const postService = usePostService()
@@ -62,7 +62,11 @@ const CreatePost = ({ isHome, communityId, communityName }) => {
 
     const handleCreate = async () => {
         setSending(true)
-        const res = await postService.createPost(text, communityValue, mediaData)
+        if (isAnnouncement) {
+            const res = await postService.createAnnouncement(text, mediaData);
+        } else {
+            const res = await postService.createPost(text, communityValue, mediaData)
+        }
         setSending(false)
     }
 
