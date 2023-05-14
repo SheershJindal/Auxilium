@@ -106,11 +106,11 @@ const Routes = () => {
                     title: 'Announcements', tabBarIcon: ({ focused }) =>
                         <Entypo name="megaphone" size={30} color={focused ? colors.primary : colors.secondary} />,
                 }} />}
-            <Tab.Screen name="Settings" component={Settings}
+            {/* <Tab.Screen name="Settings" component={Settings}
                 options={{
                     tabBarIcon: ({ focused }) =>
                         <Ionicons name="settings" size={24} color={focused ? colors.primary : colors.secondary} />,
-                }} />
+                }} /> */}
         </Tab.Navigator>
     )
 
