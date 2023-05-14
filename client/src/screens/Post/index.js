@@ -60,6 +60,7 @@ const Post = ({ route, navigation }) => {
         setSending(true)
         const response = await postService.createComment(id, commentValue, replyingTo.id);
         setSending(false)
+        navigation.goBack();
     }
 
     useEffect(() => {
