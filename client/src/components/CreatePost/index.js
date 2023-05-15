@@ -8,7 +8,7 @@ import useCommunityService from '../../hooks/api/communityService'
 import useTagService from '../../hooks/api/tagService'
 import usePostService from '../../hooks/api/postService'
 
-const CreatePost = ({ isHome, communityId, communityName, isAnnouncement = false }) => {
+const CreatePost = ({ isHome, communityId, communityName, isAnnouncement = false, navigation }) => {
     const communityService = useCommunityService()
     const tagService = useTagService()
     const postService = usePostService()
@@ -68,6 +68,7 @@ const CreatePost = ({ isHome, communityId, communityName, isAnnouncement = false
             const res = await postService.createPost(text, communityValue, mediaData)
         }
         setSending(false)
+        navigation.goBack();
     }
 
     const handleCameraUpload = async () => {

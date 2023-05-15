@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CreatePost from '../../components/CreatePost'
 
-const CreatePostHome = ({ route }) => {
+const CreatePostHome = ({ route, navigation }) => {
     const [isHome, setIsHome] = useState({})
     const [communityName, setCommunityName] = useState("")
     const [communityId, setCommunityId] = useState('')
@@ -18,7 +18,7 @@ const CreatePostHome = ({ route }) => {
 
     return (
         <>
-            <CreatePost isHome={isHome} communityName={communityName} communityId={communityId} />
+            <CreatePost isHome={isHome} communityName={communityName} communityId={communityId} navigation={navigation}/>
         </>
     )
 }
