@@ -82,7 +82,17 @@ const Search = ({ navigation }) => {
   }
 
   const PredictionItem = ({ prediction }) => {
-    return <TouchableOpacity activeOpacity={0.5} style={{ borderBottomWidth: 1, borderColor: colors.tertiary, paddingBottom: 10, paddingRight: 50, marginVertical: 5, }} onPress={() => { }}>
+    const onPress = () =>{
+      switch (state.type){
+        case "community":
+          return navigation.navigate("Community", prediction._id);
+        case "post":
+          return navigation.navigate("Post", {id:prediction._id});
+        case "comment":
+          return navigation.navigate("Post", {id:prediction.postId});
+      }
+    }
+    return <TouchableOpacity activeOpacity={0.5} style={{ borderBottomWidth: 1, borderColor: colors.tertiary, paddingBottom: 10, paddingRight: 50, marginVertical: 5, }} onPress={onPress}>
       <Text style={{ fontSize: 15, fontWeight: '600', color: 'black' }}>{prediction.name || prediction.content || prediction.data.content || ""}</Text>
       <Text style={{ color: 'black' }} numberOfLines={1}>Hello</Text>
     </TouchableOpacity>

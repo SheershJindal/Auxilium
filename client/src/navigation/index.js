@@ -101,7 +101,7 @@ const Routes = () => {
                     tabBarIcon: ({ focused }) => <Entypo name="home" size={24} color={focused ? colors.primary : colors.secondary} />
                 }}
             />
-            {user.role == "officer" && <Tab.Screen name="Announcement" component={Announcements}
+            {(user.role == "officer" || user.role == "admin") && <Tab.Screen name="Announcement" component={Announcements}
                 options={{
                     title: 'Announcements', tabBarIcon: ({ focused }) =>
                         <Entypo name="megaphone" size={30} color={focused ? colors.primary : colors.secondary} />,
