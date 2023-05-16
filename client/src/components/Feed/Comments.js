@@ -53,7 +53,7 @@ const CommentComponent = ({ _id, children, isEdited = false, likes, dislikes, us
                 <Text>{createdAt}</Text>
             </View>
             <View style={{}}>
-                <Text>{content} {_id}</Text>
+                <Text>{content}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'space-evenly', marginBottom: 20 }}>
                 <TouchableOpacity onPress={replyTo}>
