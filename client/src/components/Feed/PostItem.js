@@ -63,9 +63,9 @@ const PostItem = ({ id, profilePhotoUrl = "https://cdn.pixabay.com/photo/2015/10
                     <Text style={{ fontSize: 11, ...margin(0, 0, 0, 8), padding: 0, color: '#0f0f0f' }}>{dislikes}</Text>
 
                 </View>
-                {isShownInDiscover && <View style={postStyles.comments}>
+                <View style={postStyles.comments}>
                     <Ionicons name="ios-chatbox-outline" size={24} color={colors.secondary} />
-                </View>}
+                </View>
             </View>
         </View>
     </View>
