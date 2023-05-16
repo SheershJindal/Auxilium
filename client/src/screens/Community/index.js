@@ -93,7 +93,7 @@ const Community = ({ navigation, route }) => {
 
     return (
         <View style={{ backgroundColor: '#fff', flex: 1 }}>
-            <FlatList ListHeaderComponent={HeaderComponent} data={state.posts} keyExtractor={post => post._id} renderItem={({ item }) => <TouchableOpacity onPress={() => navigation.navigate("Post", { id: post._id })}> <PostItem {...item} postedAt={item.createdAt} profilePhotoUrl={item.createdBy.profilePhotoUrl} content={item.data.content} dislikes={item.dislikes} likes={item.likes} navigation={navigation} username={item.createdBy.username} dislikedByMe={item.dislikedByMe} likedByMe={item.likedByMe} imageURI={item.data.imageURI} id={item._id} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} /></TouchableOpacity>} />
+            <FlatList ListHeaderComponent={HeaderComponent} data={state.posts} keyExtractor={post => post._id} renderItem={({ item }) => <TouchableOpacity onPress={() => navigation.navigate("Post", { id: post._id })}><PostItem {...item} postedAt={item.createdAt} profilePhotoUrl={item.createdBy.profilePhotoUrl} content={item.data.content} dislikes={item.dislikes} likes={item.likes} navigation={navigation} username={item.createdBy.username} dislikedByMe={item.dislikedByMe} likedByMe={item.likedByMe} imageURI={item.data.imageURI} id={item._id} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} /></TouchableOpacity>} />
         </View>
     )
 }
