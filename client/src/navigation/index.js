@@ -54,7 +54,7 @@ const Routes = () => {
         <AppStack.Navigator>
             <AppStack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
             <Drawer.Screen name="Search" component={Search} options={{ headerShown: false }} />
-            <AppStack.Screen name="Post" component={Post} options={{ headerShown: false, }} />
+            <AppStack.Screen name="Post" component={Post} options={{}} />
             <AppStack.Screen name="ReactToPost" component={ReactToPost} options={({ route }) => ({ title: route.params.title })} />
             <AppStack.Screen name="CreatePost" component={CreatePostHome} initialParams={{ isHome: true, communityName: 'Home' }} options={{ headerShown: false }} />
         </AppStack.Navigator>

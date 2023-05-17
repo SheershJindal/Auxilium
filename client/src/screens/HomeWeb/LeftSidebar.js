@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View, ScrollView, FlatList, Dimensions } from 'react-native'
 import { AntDesign, Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import colors from '../../theme/colors'
@@ -6,11 +6,14 @@ import Scrollbars from 'react-custom-scrollbars'
 import useAuthService from '../../hooks/api/authService'
 import { useSelector } from 'react-redux'
 import HoverableOpacity from '../../components/HoverableOpacity'
+import useCommunityService from '../../hooks/api/communityService'
 
 const RenderCommunityItem = ({ item }) => {
 
     return <HoverableOpacity activeOpacity={0.7} hoverStyle={{ backgroundColor: colors.primary, borderRadius: 10 }} outerStyle={{}} onPress={item.onPress} style={{ flexDirection: 'row', marginLeft: 20, height: 50, alignItems: 'center', }}>
-        {(typeof item.icon !== "string") ? (item.icon)() : <Image source={{ uri: item.icon }} style={{ height: '90%', aspectRatio: 1 }} />}
+        {item.icon ?
+            (typeof item.icon !== "string") ? (item.icon)() : <Image source={{ uri: item.icon }} style={{ height: '90%', aspectRatio: 1 }} /> : null
+        }
         <Text style={{ textTransform: 'uppercase', marginLeft: 20, fontSize: 16 }}>{item.title}</Text>
     </HoverableOpacity>
 }
@@ -18,18 +21,30 @@ const RenderCommunityItem = ({ item }) => {
 const LeftSidebar = ({ navigation }) => {
     const initialList = [
         { id: 0, title: "Announcements", onPress: () => { navigation.navigate('Announcement') }, icon: () => <Entypo name="megaphone" size={24} color='black' /> },
-        { id: 1, title: "Settings", onPress: () => { navigation.navigate('Settings') }, icon: () => <Ionicons name="settings" size={24} color='black' /> },
     ]
 
-    const [isExpanded, setIsExpanded] = useState(false)
     const [communities, setCommunities] = useState(initialList)
 
     const authService = useAuthService();
+    const communityService = useCommunityService();
+
     const user = useSelector(state => state.auth.user)
 
     const logout = () => {
         authService.logout()
     }
+
+    useEffect(() => {
+        (async () => {
+            const communities = await communityService.getAllCommunities();
+            setCommunities(communities)
+        })();
+    }, [])
+
+    const getAction = (communityId) => {
+        navigation.navigate("Community", { 'community': communityId })
+    }
+
 
     return (
         <View style={{ height: '100%', flex: 1, flexDirection: 'column' }}>
@@ -40,8 +55,11 @@ const LeftSidebar = ({ navigation }) => {
                 <Scrollbars>
                     <FlatList style={{
                         flex: 1
-                    }} data={communities} renderItem={RenderCommunityItem}
+                    }} data={initialList} renderItem={RenderCommunityItem}
                         keyExtractor={item => item.id}
+                    />
+                    <FlatList data={communities}
+                        renderItem={({ item }) => RenderCommunityItem({ item: { onPress: () => getAction(item._id), title: item.name } })}
                     />
                 </Scrollbars>
             </View>

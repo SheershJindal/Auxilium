@@ -8,14 +8,11 @@ import Scrollbars from 'react-custom-scrollbars'
 import usePostService from '../../hooks/api/postService'
 import { useEffect } from 'react'
 import { Entypo, Feather } from '@expo/vector-icons'
+import Scrollable from '../../components/Scrollable'
 
 const Post = ({ route, navigation }) => {
 
     const postService = usePostService();
-
-    const Scrollable = ({ children }) => <>
-        {Platform.OS == 'web' ? <Scrollbars>{children}</Scrollbars> : <ScrollView overScrollMode='never'>{children}</ScrollView>}
-    </>
 
     const { id } = route.params || ""
 
