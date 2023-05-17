@@ -17,6 +17,8 @@ import Announcements from "../screens/Announcements";
 import CreatePostHome from "../screens/CreatePostHome";
 import Post from "../screens/Post";
 import ReactToPost from "../screens/ReactToPost";
+import Community from "../screens/Community";
+import Search from "../screens/Search";
 
 
 const Routes = () => {
@@ -46,10 +48,11 @@ const Routes = () => {
         <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="Home" component={Home} />
             <HomeStack.Screen name="Announcement" component={Announcements} />
-            <HomeStack.Screen name="Settings" component={Settings} />
             <HomeStack.Screen name="CreatePost" component={CreatePostHome} initialParams={{ isHome: true, communityName: 'Home' }} />
             <HomeStack.Screen name="Post" component={Post} />
             <HomeStack.Screen name="ReactToPost" component={ReactToPost} options={({ route }) => ({ title: route.params.title })} />
+            <HomeStack.Screen name="Community" component={Community} />
+            <HomeStack.Screen name="Search" component={Search} />
         </HomeStack.Navigator>
     )
 

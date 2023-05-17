@@ -86,10 +86,11 @@ const postStyles = StyleSheet.create({
         flex: 1,
     },
     container: {
-        // ...margin(16, 16, 0, 16),
         marginBottom: 16,
         borderRadius: 6,
-        padding: 8,
+        paddingRight: 8,
+        paddingLeft: 8,
+        paddingBottom: 8
     },
     headerContainer: {
         flexDirection: 'row',

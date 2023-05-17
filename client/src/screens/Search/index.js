@@ -1,6 +1,6 @@
 import React, { useReducer, useState, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import colors from '../../theme/colors'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import useSearchService from '../../hooks/api/searchService'
@@ -76,25 +76,26 @@ const Search = ({ navigation }) => {
       customDispatch({ type: action })
     }
     const selected = state.type == type;
-    return <TouchableOpacity onPress={onPress} style={{ borderBottomWidth: selected ? 2 : 0, flex: 1, borderColor: colors.primary }}>
+    return <TouchableOpacity onPress={onPress} style={{ borderBottomWidth: selected ? 2 : 0, flex: 1, borderColor: colors.primary, padding: 5 }}>
       <Text style={{ fontSize: 15, fontWeight: 'bold', color: selected ? colors.primary : 'black', width: '100%', textAlign: 'center' }}>{value}</Text>
     </TouchableOpacity>
   }
 
   const PredictionItem = ({ prediction }) => {
-    const onPress = () =>{
-      switch (state.type){
+    const onPress = () => {
+      switch (state.type) {
         case "community":
-          return navigation.navigate("Community", prediction._id);
+          return navigation.navigate("Community", { community: prediction._id });
         case "post":
-          return navigation.navigate("Post", {id:prediction._id});
+          return navigation.navigate("Post", { id: prediction._id });
         case "comment":
-          return navigation.navigate("Post", {id:prediction.postId});
+          return navigation.navigate("Post", { id: prediction.postId });
       }
     }
-    return <TouchableOpacity activeOpacity={0.5} style={{ borderBottomWidth: 1, borderColor: colors.tertiary, paddingBottom: 10, paddingRight: 50, marginVertical: 5, }} onPress={onPress}>
+    return <TouchableOpacity activeOpacity={0.5} style={{ borderBottomWidth: 1, borderColor: colors.tertiary, paddingBottom: 10, paddingRight: 50, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} onPress={onPress}>
       <Text style={{ fontSize: 15, fontWeight: '600', color: 'black' }}>{prediction.name || prediction.content || prediction.data.content || ""}</Text>
-      <Text style={{ color: 'black' }} numberOfLines={1}>Hello</Text>
+      {prediction.data && prediction.data.imageURI ? <Image source={{ uri: prediction.data.imageURI }} style={{ width: 50, height: 50 }} /> : null}
+      {/* <Text style={{ color: 'black' }} numberOfLines={1}>Hello</Text> */}
     </TouchableOpacity>
   }
 
@@ -110,7 +111,7 @@ const Search = ({ navigation }) => {
             value={searchTerm} onChangeText={handleTextInput}
             autoCorrect={false} placeholderTextColor={colors.secondary} style={{ ...styles.searchInput, }} autoFocus={true} />
         </View>
-        {!_isEmpty(state.data) && <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginHorizontal: 10 }}>
+        {!_isEmpty(state.data) && <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginHorizontal: 10, marginTop: 10 }}>
           <ActionItem value="Posts" type="post" />
           <ActionItem value="Community" type="community" />
           <ActionItem value="Comments" type="comment" />

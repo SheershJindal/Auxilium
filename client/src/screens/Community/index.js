@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { Image, Text, View, StyleSheet, Button, FlatList, TouchableOpacity } from "react-native";
+import { Image, Text, View, StyleSheet, Button, FlatList, TouchableOpacity, Platform } from "react-native";
 import useCommunityService from "../../hooks/api/communityService";
 import colors from "../../theme/colors";
 import PostItem from "../../components/Feed/PostItem";
 import { useReducer } from "react";
 import { useCallback } from "react";
+import Scrollable from "../../components/Scrollable";
 
 const Community = ({ navigation, route }) => {
     const communityService = useCommunityService();
@@ -92,8 +93,10 @@ const Community = ({ navigation, route }) => {
 
 
     return (
-        <View style={{ backgroundColor: '#fff', flex: 1 }}>
-            <FlatList ListHeaderComponent={HeaderComponent} data={state.posts} keyExtractor={post => post._id} renderItem={({ item }) => <TouchableOpacity onPress={() => navigation.navigate("Post", { id: item._id })}><PostItem {...item} postedAt={item.createdAt} profilePhotoUrl={item.createdBy.profilePhotoUrl} content={item.data.content} dislikes={item.dislikes} likes={item.likes} navigation={navigation} username={item.createdBy.username} dislikedByMe={item.dislikedByMe} likedByMe={item.likedByMe} imageURI={item.data.imageURI} id={item._id} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} /></TouchableOpacity>} />
+        <View style={{ backgroundColor: '#fff', flex: 1, width: Platform.OS == 'web' ? '50%' : '100%', alignSelf: 'center' }}>
+            <Scrollable>
+                <FlatList ListHeaderComponent={HeaderComponent} data={state.posts} keyExtractor={post => post._id} renderItem={({ item }) => <TouchableOpacity onPress={() => navigation.navigate("Post", { id: item._id })}><PostItem {...item} postedAt={item.createdAt} profilePhotoUrl={item.createdBy.profilePhotoUrl} content={item.data.content} dislikes={item.dislikes} likes={item.likes} navigation={navigation} username={item.createdBy.username} dislikedByMe={item.dislikedByMe} likedByMe={item.likedByMe} imageURI={item.data.imageURI} id={item._id} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} /></TouchableOpacity>} />
+            </Scrollable>
         </View>
     )
 }
