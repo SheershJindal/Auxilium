@@ -5,6 +5,8 @@ import { Types } from 'mongoose';
 import { Db } from 'mongodb';
 import mongoose from '@/loaders/mongoose';
 import { ICommunity } from '@/interfaces/ICommunity';
+import { IUser } from '@/interfaces/IUser';
+import UserCommunityModel from '@/models/userCommunity';
 
 @Service()
 export class PostRepository {
@@ -146,6 +148,61 @@ export class PostRepository {
     } catch (e) {
       throw e;
     }
+  };
+
+  public getPostsForAllSubscribedCommunities = async (userId: IUser['_id'], pageNumber: number, limit: number) => {
+    try {
+      const posts = await UserCommunityModel.aggregate([
+        {
+          $match: {
+            userId: new Types.ObjectId(userId),
+          },
+        },
+        {
+          $lookup: {
+            from: 'posts',
+            localField: 'communityId',
+            foreignField: 'communityId',
+            as: 'posts',
+          },
+        },
+        {
+          $unwind: {
+            path: '$posts',
+          },
+        },
+        {
+          $sort: {
+            'posts.createdAt': -1,
+          },
+        },
+        {
+          $skip: pageNumber * limit,
+        },
+        {
+          $limit: limit,
+        },
+        {
+          $project: {
+            _id: 0,
+            post: 1,
+          },
+        },
+      ]);
+      const results = posts.map(post => post.post);
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  public getPostsForDisover = async (userId: IUser['_id'], pageNumber: number, limit: number) => {
+    const posts = await PostModel.find({})
+      .sort({ createdAt: -1 })
+      .skip(pageNumber * limit)
+      .limit(limit)
+      .lean();
+    return posts;
   };
 
   public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']): Promise<IPost> => {

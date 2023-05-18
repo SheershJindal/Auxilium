@@ -5,6 +5,7 @@ import tag from './routes/tag';
 import upload from './routes/upload';
 import auth from './routes/auth';
 import search from './routes/search';
+import discover from './routes/discover';
 
 // guaranteed to get dependencies
 export default () => {
@@ -15,5 +16,6 @@ export default () => {
   tag(app);
   auth(app);
   search(app);
+  discover(app);
   return app;
 };
