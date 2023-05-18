@@ -3,18 +3,30 @@ import React, { useState } from 'react'
 import Scrollbars from 'react-custom-scrollbars'
 import PostItem from './PostItem'
 import Community from '../../screens/Community'
-import feedData from '../../dummy-data/feedData'
+import { useEffect } from 'react'
+import useDiscoverService from '../../hooks/api/discoverService'
 
 const Feed = ({ navigation, isCommunityFeed }) => {
 
+    const discoverService = useDiscoverService();
+
     const [imageZoomStatus, setImageZoomStatus] = useState({ id: '', isOpen: false })
+
+    const [posts, setPosts] = useState([])
+
+    useEffect(() => {
+        (async () => {
+            const posts = await discoverService.getDiscover();
+            setPosts(posts)
+        })();
+    }, [])
 
     const Posts = () =>
         <FlatList
-            data={feedData}
+            data={posts}
             keyExtractor={item => item._id}
             renderItem={({ item }) => {
-                const { _id, likes, dislikedByMe, dislikes, data, communityId, createdAt, createdBy, likedByMe, type, updatedAt, comments } = item;
+                const { _id, likes, dislikedByMe, dislikes, data, communityId, createdAt, createdBy, likedByMe, type, updatedAt } = item;
                 return <TouchableOpacity onPress={() => navigation.navigate("Post", { id: _id })} activeOpacity={0.7}>
                     <PostItem
                         id={_id}
@@ -25,7 +37,6 @@ const Feed = ({ navigation, isCommunityFeed }) => {
                         imageURI={data.imageURI}
                         likes={likes}
                         dislikes={dislikes}
-                        comments={comments}
                         imageZoomStatus={imageZoomStatus}
                         setImageZoomStatus={setImageZoomStatus}
                         navigation={navigation}
