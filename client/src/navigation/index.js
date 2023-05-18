@@ -57,6 +57,7 @@ const Routes = () => {
             <AppStack.Screen name="Post" component={Post} options={{}} />
             <AppStack.Screen name="ReactToPost" component={ReactToPost} options={({ route }) => ({ title: route.params.title })} />
             <AppStack.Screen name="CreatePost" component={CreatePostHome} initialParams={{ isHome: true, communityName: 'Home' }} options={{ headerShown: false }} />
+            <AppStack.Screen name="Community" component={Community} />
         </AppStack.Navigator>
     )
 
@@ -75,7 +76,6 @@ const Routes = () => {
                         </View>
                     )
                 })} />
-            <Drawer.Screen name="Community" component={Community} />
         </Drawer.Navigator>
     }
 
