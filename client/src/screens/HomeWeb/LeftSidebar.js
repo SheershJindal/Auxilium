@@ -74,7 +74,7 @@ const LeftSidebar = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <AntDesign name="user" size={30} color="black" style={{ marginRight: 20 }} />
                         <View>
-                            <Text style={{ fontWeight: '600', fontSize: 18 }}>{user.name ? user.name : "User"}</Text>
+                            <Text style={{ fontWeight: '600', fontSize: 18 }}>{user.username ? user.username : "User"}</Text>
                             <Text>{user.graduationYear ?? user.graduationYear}</Text>
                         </View>
                     </View>
