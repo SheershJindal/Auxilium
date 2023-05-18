@@ -196,14 +196,6 @@ export class PostRepository {
     }
   };
 
-  public getPostsForDisover = async (userId: IUser['_id'], pageNumber: number, limit: number) => {
-    const posts = await PostModel.find({})
-      .sort({ createdAt: -1 })
-      .skip(pageNumber * limit)
-      .limit(limit)
-      .lean();
-    return posts;
-  };
 
   public likeUnlikePost = async (userId: IPost['userId'], postId: IPost['_id']): Promise<IPost> => {
     try {
