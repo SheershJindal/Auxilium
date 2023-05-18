@@ -31,7 +31,7 @@ const config = {
 }
 
 const linking = {
-    prefixes: ["demo://app"],
+    prefixes: ["epics://app"],
     config
 }
 

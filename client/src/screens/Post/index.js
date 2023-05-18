@@ -65,7 +65,7 @@ const Post = ({ route, navigation }) => {
     }, [id])
 
     return (
-        <SafeAreaView style={{ flex: 1, width: Platform.OS == 'web' ? '50%' : '100%', alignSelf: 'center', }}>
+        <View style={{ flex: 1, width: Platform.OS == 'web' ? '50%' : '100%', alignSelf: 'center', marginTop: 10 }}>
             <Scrollable>
                 <PostItem id={post._id} imageZoomStatus={imageZoomStatus} setImageZoomStatus={setImageZoomStatus} likes={post.likes} dislikes={post.likes} comments={2} postedAt={post.createdAt} content={post.content} imageURI={post.imageURI} isShownInDiscover={false} dislikedByMe={post.dislikedByMe} likedByMe={post.likedByMe} navigation={navigation} username={post.username} />
                 <Comments setReplyingTo={setReplyingTo} comments={comments} />
@@ -86,8 +86,7 @@ const Post = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-
-        </SafeAreaView>
+        </View>
     )
 }
 
