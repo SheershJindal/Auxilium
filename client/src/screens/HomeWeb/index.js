@@ -10,10 +10,10 @@ const Home = ({ navigation }) => {
             <View style={{ flex: 0.2, padding: 20, paddingTop: 10, }}>
                 <LeftSidebar navigation={navigation} />
             </View>
-            <View style={{ flex: 0.55, paddingHorizontal: 20, paddingTop: 10, backgroundColor: '#ebecf3', }}>
+            <View style={{ flex: 0.6, paddingHorizontal: 20, paddingTop: 10, backgroundColor: '#ebecf3', }}>
                 <Discover navigation={navigation} isCommunityFeed={false} />
             </View>
-            <View style={{ flex: 0.25, padding: 20, paddingTop: 10, }}>
+            <View style={{ flex: 0.2, padding: 20, paddingTop: 10, }}>
                 <RightSidebar />
             </View>
         </View>
