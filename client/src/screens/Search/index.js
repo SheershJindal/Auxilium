@@ -85,7 +85,7 @@ const Search = ({ navigation }) => {
     const onPress = () => {
       switch (state.type) {
         case "community":
-          return navigation.navigate("Community", { community: prediction._id });
+          return navigation.navigate("Community", { id: prediction._id });
         case "post":
           return navigation.navigate("Post", { id: prediction._id });
         case "comment":
