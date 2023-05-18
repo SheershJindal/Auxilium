@@ -24,7 +24,7 @@ const CustomDrawer = ({ navigation, ...props }) => {
     }, [])
 
     const getAction = (communityId) => {
-        navigation.navigate("Community", { 'community': communityId })
+        navigation.navigate("Community", { id: communityId })
     }
 
 

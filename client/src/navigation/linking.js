@@ -26,6 +26,9 @@ const config = {
         },
         ReactToPost: {
             path: "react",
+        },
+        Community: {
+            path: "community/:id"
         }
     }
 }

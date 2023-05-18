@@ -57,8 +57,8 @@ const Community = ({ navigation, route }) => {
 
     useEffect(() => {
         (async () => {
-            if (route.params && route.params['community']) {
-                const communityId = route.params['community'];
+            if (route.params && route.params['id']) {
+                const communityId = route.params['id'];
                 const community = await communityService.getCommunity(communityId);
                 customDispatch({ type: 'INITIALISE_COMMUNITY', payload: { community } });
             }
