@@ -23,6 +23,7 @@ export class DiscoverService {
     posts.map(post => {
       allPosts.push(...post);
     });
+    allPosts.sort((post1, post2) => post2.createdAt - post1.createdAt);
 
     const postsArr = allPosts.map(post => {
       let likedByMe = false;
